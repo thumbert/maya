@@ -2,24 +2,26 @@ import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter/material.dart';
 import 'package:date/date.dart' as date;
 import 'package:timezone/timezone.dart';
+import 'package:provider/provider.dart';
+import 'package:maya/models/calculator_model.dart';
 
 class TermUi extends StatefulWidget {
-  TermUi(this.calculator);
-
-  final ElecSwapCalculator calculator;
+  TermUi();
 
   @override
-  State<StatefulWidget> createState() => _TermUiState(calculator);
+  State<StatefulWidget> createState() => _TermUiState();
 }
 
 class _TermUiState extends State<TermUi> {
-  _TermUiState(this.calculator);
+  _TermUiState();
 
-  ElecSwapCalculator calculator;
   bool _termError = false;
+  String _error;
 
   @override
   Widget build(BuildContext context) {
+    final calculator = context.watch<CalculatorModel>();
+
     return Container(
         width: 140.0,
         child: TextFormField(
@@ -31,16 +33,18 @@ class _TermUiState extends State<TermUi> {
             enabledBorder: UnderlineInputBorder(
               borderSide: BorderSide(color: Theme.of(context).primaryColor),
             ),
-            errorText: _termError ? 'Parsing error' : null,
+            errorText: _error,
           ),
           onChanged: (text) {
             setState(() {
               try {
                 calculator.term = date.Term.parse(text, UTC);
-                _termError = false;
+                _error = null;
               } on ArgumentError catch (_) {
-                _termError = true;
-              } catch (e) {}
+                _error = 'Parsing error';
+              } catch (e) {
+                print(e);
+              }
             });
           },
         ));

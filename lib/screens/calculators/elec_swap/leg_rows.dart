@@ -3,21 +3,19 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:elec/elec.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
-import 'package:timezone/browser.dart';
+import 'package:provider/provider.dart';
+import 'package:maya/models/calculator_model.dart';
 
 class LegRows extends StatefulWidget {
-  LegRows(this.calculator, {Key key}) : super(key: key);
-
-  final ElecSwapCalculator calculator;
+  LegRows({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _LegRowsState(calculator);
+  State<StatefulWidget> createState() => _LegRowsState();
 }
 
 class _LegRowsState extends State<LegRows> {
-  _LegRowsState(this.calculator);
+  _LegRowsState();
 
-  ElecSwapCalculator calculator;
   final _qtyError = <String>[];
   final _regionError = <String>[];
   final _serviceError = <String>[];
@@ -38,6 +36,7 @@ class _LegRowsState extends State<LegRows> {
 
   @override
   void dispose() {
+    final calculator = context.read<CalculatorModel>();
     for (var i = 0; i < calculator.legs.length; i++) {
       qtyControllers[i].dispose();
       regionControllers[i].dispose();
@@ -52,6 +51,7 @@ class _LegRowsState extends State<LegRows> {
   @override
   void initState() {
     super.initState();
+    final calculator = context.read<CalculatorModel>();
     for (var i = 0; i < calculator.legs.length; i++) {
       _qtyError.add(null); // TODO: may need to check inputs
       _regionError.add(null);
@@ -72,6 +72,8 @@ class _LegRowsState extends State<LegRows> {
 
   @override
   Widget build(BuildContext context) {
+    final calculator = context.watch<CalculatorModel>();
+
     return Table(columnWidths: {
       0: IntrinsicColumnWidth(), // qty
       1: IntrinsicColumnWidth(), // region
@@ -93,24 +95,25 @@ class _LegRowsState extends State<LegRows> {
   }
 
   List<Widget> commodityRow(int row) {
+    final calculator = context.watch<CalculatorModel>();
+    var leg = calculator.legs[row];
+
     return [
-      //quantity
+      /// Quantity
       Container(
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
         color: Colors.grey[300],
         child: TextField(
           controller: qtyControllers[row],
           onChanged: (value) {
-            setState(() {
-              var qty = num.tryParse(value);
-              if (qty == null || value == '') {
-                _qtyError[row] = 'Error';
-              } else {
-                _qtyError[row] = null;
-                calculator.legs[row].quantitySchedule =
-                    HourlySchedule.filled(qty);
-              }
-            });
+            var qty = num.tryParse(value);
+            if (qty == null || value == '') {
+              _qtyError[row] = 'Error';
+            } else {
+              _qtyError[row] = null;
+              leg.quantitySchedule = HourlySchedule.filled(qty);
+              calculator.setLeg(row, leg);
+            }
           },
           textAlign: TextAlign.right,
           scrollPadding: EdgeInsets.all(5),
@@ -160,6 +163,7 @@ class _LegRowsState extends State<LegRows> {
       //       // onSaved: (value) => _buckets[0] = value,
       //     )),
       // region
+      /// Region
       Container(
         color: Colors.grey[300],
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -186,6 +190,8 @@ class _LegRowsState extends State<LegRows> {
           ),
         ),
       ),
+
+      /// Service
       Container(
         color: Colors.grey[300],
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -212,6 +218,8 @@ class _LegRowsState extends State<LegRows> {
           ),
         ),
       ),
+
+      /// Curve
       Container(
         color: Colors.grey[300],
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -238,7 +246,8 @@ class _LegRowsState extends State<LegRows> {
           ),
         ),
       ),
-      // bucket
+
+      /// Bucket
       Container(
           color: Colors.grey[300],
           width: 100.0,
@@ -265,32 +274,29 @@ class _LegRowsState extends State<LegRows> {
               return suggestionsBox;
             },
             onSuggestionSelected: (suggestion) {
-              setState(() {
-                bucketControllers[row].text = suggestion;
-                calculator.legs[row].bucket = Bucket.parse(suggestion);
-              });
+              bucketControllers[row].text = suggestion;
+              leg.bucket = Bucket.parse(suggestion);
+              calculator.setLeg(row, leg);
             },
             noItemsFoundBuilder: (context) =>
                 Text(' Invalid bucket', style: TextStyle(color: Colors.red)),
           )),
-      // Fix price
+
+      /// Fix price
       Container(
         color: Colors.grey[300],
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
         child: TextField(
             controller: fixedPriceControllers[row],
             onChanged: (value) {
-              setState(() {
-                var qty = num.tryParse(value);
-                if (qty == null || value == '') {
-                  _fixPriceError[row] = 'Error';
-                } else {
-                  _fixPriceError[row] = null;
-                  calculator.legs[row].fixPriceSchedule =
-                      HourlySchedule.filled(qty);
-                  print('Set fixPrice of leg $row to $qty');
-                }
-              });
+              var qty = num.tryParse(value);
+              if (qty == null || value == '') {
+                _fixPriceError[row] = 'Error';
+              } else {
+                _fixPriceError[row] = null;
+                leg.fixPriceSchedule = HourlySchedule.filled(qty);
+                calculator.setLeg(row, leg);
+              }
             },
             textAlign: TextAlign.right,
             scrollPadding: EdgeInsets.all(5),
@@ -303,7 +309,8 @@ class _LegRowsState extends State<LegRows> {
                 border: _outlineInputBorder,
                 enabledBorder: _outlineInputBorder)),
       ),
-      // Price
+
+      /// Price
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 70,
@@ -314,11 +321,44 @@ class _LegRowsState extends State<LegRows> {
               alignment: Alignment.centerRight,
               decoration:
                   BoxDecoration(color: Theme.of(context).primaryColorLight),
-              child: Text(
-                '50.81',
-                style: TextStyle(fontSize: 16),
+              // child: Text('58.71', style: TextStyle(fontSize: 16),
+              child: FutureBuilder<String>(
+                future: _getPrice(row, calculator),
+                builder: (context, snapshot) {
+                  List<Widget> children;
+                  if (snapshot.hasData) {
+                    children = [
+                      Text(
+                        snapshot.data,
+                        style: TextStyle(fontSize: 16),
+                      )
+                    ];
+                  } else if (snapshot.hasError) {
+                    children = [
+                      Icon(Icons.error_outline, color: Colors.red),
+                      Text(
+                        'Error',
+                        style: TextStyle(fontSize: 16),
+                      )
+                    ];
+                  } else {
+                    children = [
+                      SizedBox(
+                          height: 20,
+                          width: 20,
+                          child: CircularProgressIndicator(
+                            strokeWidth: 2,
+                          ))
+                    ];
+                  }
+                  return Row(
+                    children: children,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                  );
+                },
               ))),
-      // Menu
+
+      /// Menu with actions (end of row)
       Container(
           height: 36,
           alignment: Alignment.centerLeft,
@@ -368,66 +408,68 @@ class _LegRowsState extends State<LegRows> {
     ];
   }
 
+  Future<String> _getPrice(int row, CalculatorModel calculator) async {
+    await calculator.build();
+    var leg = calculator.legs[row];
+    return leg.price().toStringAsFixed(2);
+  }
+
   /// Add a new row after [row] index.
   void addRow(int row) {
-    setState(() {
-      var newLeg = calculator.legs[row].copy();
-      calculator.legs.insert(row + 1, newLeg);
-      print('Adding row: ${row + 1}');
-      for (var leg in calculator.legs) {
-        print(leg.toJson());
-      }
-      _qtyError.insert(row + 1, null);
-      _regionError.insert(row + 1, null);
-      _serviceError.insert(row + 1, null);
-      _curveError.insert(row + 1, null);
-      _fixPriceError.insert(row + 1, null);
-      qtyControllers.insert(
-          row + 1,
-          TextEditingController()
-            ..text = calculator.legs[row + 1].showQuantity().toString()
-            ..addListener(() {}));
-      regionControllers.insert(
-          row + 1, TextEditingController()..text = regionControllers[row].text);
-      serviceControllers.insert(row + 1,
-          TextEditingController()..text = serviceControllers[row].text);
-      curveControllers.insert(
-          row + 1, TextEditingController()..text = curveControllers[row].text);
-      bucketControllers.insert(
-          row + 1, TextEditingController()..text = bucketControllers[row].text);
-      fixedPriceControllers.insert(
-          row + 1,
-          TextEditingController()
-            ..text = calculator.legs[row + 1].showFixPrice().toString());
-    });
+    final calculator = context.read<CalculatorModel>();
+
+    var newLeg = calculator.legs[row].copy();
+    calculator.addLeg(row + 1, newLeg);
+    // print('Adding row: ${row + 1}');
+
+    _qtyError.insert(row + 1, null);
+    _regionError.insert(row + 1, null);
+    _serviceError.insert(row + 1, null);
+    _curveError.insert(row + 1, null);
+    _fixPriceError.insert(row + 1, null);
+    qtyControllers.insert(
+        row + 1,
+        TextEditingController()
+          ..text = calculator.legs[row + 1].showQuantity().toString()
+          ..addListener(() {}));
+    regionControllers.insert(
+        row + 1, TextEditingController()..text = regionControllers[row].text);
+    serviceControllers.insert(
+        row + 1, TextEditingController()..text = serviceControllers[row].text);
+    curveControllers.insert(
+        row + 1, TextEditingController()..text = curveControllers[row].text);
+    bucketControllers.insert(
+        row + 1, TextEditingController()..text = bucketControllers[row].text);
+    fixedPriceControllers.insert(
+        row + 1,
+        TextEditingController()
+          ..text = calculator.legs[row + 1].showFixPrice().toString());
   }
 
   /// Clear all inputs [row] from the table.  Calculator won't price.
   void clearRow(int row) {
-    setState(() {
-      qtyControllers[row].text = '';
-      fixedPriceControllers[row].text = '';
-    });
+    qtyControllers[row].text = '';
+    fixedPriceControllers[row].text = '';
   }
 
   /// Remove [row] from the table.
   void removeRow(int row) {
-    setState(() {
-      if (calculator.legs.length > 1) {
-        calculator.legs.removeAt(row);
-        _qtyError.removeAt(row);
-        _regionError.removeAt(row);
-        _serviceError.removeAt(row);
-        _curveError.removeAt(row);
-        _fixPriceError.removeAt(row);
-        qtyControllers.removeAt(row);
-        regionControllers.removeAt(row);
-        serviceControllers.removeAt(row);
-        curveControllers.removeAt(row);
-        bucketControllers.removeAt(row);
-        fixedPriceControllers.removeAt(row);
-      }
-    });
+    final calculator = context.read<CalculatorModel>();
+
+    if (calculator.legs.length > 1) {
+      calculator.removeLeg(row);
+      _qtyError.removeAt(row);
+      _regionError.removeAt(row);
+      _serviceError.removeAt(row);
+      _curveError.removeAt(row);
+      _fixPriceError.removeAt(row);
+      qtyControllers.removeAt(row);
+      regionControllers.removeAt(row);
+      serviceControllers.removeAt(row);
+      curveControllers.removeAt(row);
+      bucketControllers.removeAt(row);
+      fixedPriceControllers.removeAt(row);
+    }
   }
 
   List<Widget> header() {
@@ -470,7 +512,7 @@ class _LegRowsState extends State<LegRows> {
       ),
       // Text('\nCurve', style: _style),
       Text('\nBucket   ', style: _style),
-      Text('Fixed\nPrice   ', style: _style),
+      Text('Fix\nPrice   ', style: _style),
       Text('\nPrice   ', style: _style),
       Text(''),
     ];

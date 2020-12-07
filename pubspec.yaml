@@ -36,12 +36,11 @@ dependencies:
       url: git://github.com/thumbert/elec.git
   flutter_advanced_switch: '>=0.0.4 <1.0.0'
   flutter_dotenv: ^2.1.0
-  flutter_riverpod: ^0.12.1
   flutter_typeahead: ^1.8.8
-  hooks_riverpod: ^0.12.1
+  google_fonts: ^1.1.1
   http: '>=0.12.0 <1.0.0'
   intl: '>=0.14.0 <0.17.0'
-  riverpod: ^0.12.1
+  provider: '>=4.3.2 <5.0.0'
   timezone: '>=0.5.5 <1.0.0'
 
 
