@@ -5,6 +5,10 @@ import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
+const homepage = '/';
+const reportsRoute = '/reports';
+const reportOutput = '/reports/output';
+
 void main() async {
   initializeTimeZones();
   await DotEnv().load('.env');
