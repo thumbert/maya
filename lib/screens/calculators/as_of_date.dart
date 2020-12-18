@@ -24,7 +24,8 @@ class _AsOfDateState extends State<AsOfDateUi> {
     final calculator = context.watch<CalculatorModel>();
     notToday = calculator.asOfDate != date.Date.today();
     return Container(
-        width: 140.0,
+        width: 164.0,
+        padding: EdgeInsets.all(12),
         decoration: BoxDecoration(
             border: notToday
                 ? Border.all(color: Theme.of(context).buttonColor, width: 3)

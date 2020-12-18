@@ -14,7 +14,9 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ElecSwapCalculatorUi extends StatelessWidget {
-  ElecSwapCalculatorUi();
+  ElecSwapCalculatorUi({Key key, this.title}) : super(key: key);
+
+  final String title;
 
   final _formKey = GlobalKey<FormState>();
   static final NumberFormat _dollarPriceFmt =
@@ -24,151 +26,164 @@ class ElecSwapCalculatorUi extends StatelessWidget {
   Widget build(BuildContext context) {
     final calculator = context.watch<CalculatorModel>();
 
-    return Form(
-      key: _formKey,
-      child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-        SizedBox(height: 20),
-
-        /// First row: Term, As of date, Buy/Sell widgets
-        Row(
+    return Scaffold(
+      appBar: AppBar(
+        title: Text(title),
+      ),
+      body: Center(
+        child: Column(
           mainAxisAlignment: MainAxisAlignment.start,
           children: [
-            SizedBox(width: 20),
-            TermUi(),
-            SizedBox(width: 40),
-            AsOfDateUi(),
-            SizedBox(width: 40),
-            AdvancedSwitch(
-              activeChild: Text('Buy'),
-              inactiveChild: Text('Sell'),
-              activeColor: Colors.green,
-              inactiveColor: Colors.red,
-              borderRadius: BorderRadius.circular(20),
-              width: 100,
-              height: 30,
-              value: calculator.buySell == BuySell.buy ? true : false,
-              onChanged: (value) {
-                calculator.buySell = value ? BuySell.buy : BuySell.sell;
-              },
+            Form(
+              key: _formKey,
+              child:
+                  Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+                SizedBox(height: 20),
+
+                /// First row: Term, As of date, Buy/Sell widgets
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    SizedBox(width: 20),
+                    TermUi(),
+                    SizedBox(width: 40),
+                    AsOfDateUi(),
+                    SizedBox(width: 40),
+                    AdvancedSwitch(
+                      activeChild: Text('Buy'),
+                      inactiveChild: Text('Sell'),
+                      activeColor: Colors.green,
+                      inactiveColor: Colors.red,
+                      borderRadius: BorderRadius.circular(20),
+                      width: 100,
+                      height: 30,
+                      value: calculator.buySell == BuySell.buy ? true : false,
+                      onChanged: (value) {
+                        calculator.buySell = value ? BuySell.buy : BuySell.sell;
+                      },
+                    )
+                  ],
+                ),
+
+                /// Leg rows
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: LegRows(),
+                ),
+                const SizedBox(height: 20),
+
+                /// Dollar price
+                Row(children: [
+                  const SizedBox(width: 20),
+                  Text(
+                    'Dollar Price',
+                    style: TextStyle(
+                        fontSize: 18, color: Theme.of(context).primaryColor),
+                  ),
+                  const SizedBox(width: 20),
+                  ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: 100,
+                        minHeight: 37,
+                      ),
+                      child: Container(
+                        padding: EdgeInsets.all(5),
+                        alignment: Alignment.centerRight,
+                        decoration: BoxDecoration(
+                            color: Theme.of(context).primaryColorLight),
+                        child: FutureBuilder<String>(
+                            future: _dollarReprice(calculator),
+                            builder: (context, snapshot) {
+                              List<Widget> children;
+                              if (snapshot.hasData) {
+                                children = [
+                                  // Icon(Icons.done, color: Colors.green),
+                                  // SizedBox(width: 20),
+                                  Text(
+                                    snapshot.data,
+                                    style: TextStyle(fontSize: 16),
+                                  )
+                                ];
+                              } else if (snapshot.hasError) {
+                                children = [
+                                  Icon(Icons.error_outline, color: Colors.red),
+                                  Text(
+                                    snapshot.error,
+                                    style: TextStyle(fontSize: 16),
+                                  )
+                                ];
+                              } else {
+                                children = [
+                                  SizedBox(
+                                      height: 20,
+                                      width: 20,
+                                      child: CircularProgressIndicator(
+                                        strokeWidth: 2,
+                                      ))
+                                ];
+                              }
+                              return Row(children: children);
+                            }),
+                      )),
+                ]),
+                const SizedBox(height: 20),
+
+                /// Comments box
+                Row(
+                  children: [
+                    Container(
+                      color: Colors.grey[300],
+                      margin: EdgeInsetsDirectional.only(start: 20),
+                      width: 500,
+                      // height: 100,
+                      child: TextField(
+                        keyboardType: TextInputType.multiline,
+                        maxLength: null,
+                        maxLines: null,
+                        decoration: InputDecoration(
+                            labelText: 'Comments',
+                            // labelStyle:
+                            //     TextStyle(color: Theme.of(context).primaryColor),
+                            border: _outlineInputBorder,
+                            enabledBorder: _outlineInputBorder,
+                            contentPadding: EdgeInsets.all(8),
+                            hintText: 'Enter a comment'),
+                      ),
+                    )
+                  ],
+                ),
+                const SizedBox(height: 40),
+
+                /// Bottom app buttons (Details, Reports, Save, Help)
+                Row(
+                  children: [
+                    const SizedBox(width: 20),
+                    RaisedButton(
+                        child: Text('Details'),
+                        onPressed: () => _showDetails(context, calculator),
+                        color: Theme.of(context).buttonColor),
+                    const SizedBox(width: 12),
+                    RaisedButton(
+                        child: Text('Reports'),
+                        onPressed: () => _showReports(context, calculator),
+                        color: Theme.of(context).buttonColor),
+                    const SizedBox(width: 12),
+                    RaisedButton(
+                        child: Text('Save'),
+                        onPressed: () {},
+                        color: Theme.of(context).buttonColor),
+                    const SizedBox(width: 12),
+                    RaisedButton(
+                        child: Text('Help'),
+                        onPressed: () {},
+                        color: Theme.of(context).buttonColor),
+                  ],
+                )
+              ]),
             )
           ],
         ),
-
-        /// Leg rows
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: LegRows(),
-        ),
-        const SizedBox(height: 20),
-
-        /// Dollar price
-        Row(children: [
-          const SizedBox(width: 20),
-          Text(
-            'Dollar Price',
-            style:
-                TextStyle(fontSize: 18, color: Theme.of(context).primaryColor),
-          ),
-          const SizedBox(width: 20),
-          ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 100,
-                minHeight: 37,
-              ),
-              child: Container(
-                padding: EdgeInsets.all(5),
-                alignment: Alignment.centerRight,
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColorLight),
-                child: FutureBuilder<String>(
-                    future: _dollarReprice(calculator),
-                    builder: (context, snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = [
-                          // Icon(Icons.done, color: Colors.green),
-                          // SizedBox(width: 20),
-                          Text(
-                            snapshot.data,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = [
-                          Icon(Icons.error_outline, color: Colors.red),
-                          Text(
-                            snapshot.error,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ];
-                      } else {
-                        children = [
-                          SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ))
-                        ];
-                      }
-                      return Row(children: children);
-                    }),
-              )),
-        ]),
-        const SizedBox(height: 20),
-
-        /// Comments box
-        Row(
-          children: [
-            Container(
-              color: Colors.grey[300],
-              margin: EdgeInsetsDirectional.only(start: 20),
-              width: 500,
-              // height: 100,
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLength: null,
-                maxLines: null,
-                decoration: InputDecoration(
-                    labelText: 'Comments',
-                    // labelStyle:
-                    //     TextStyle(color: Theme.of(context).primaryColor),
-                    border: _outlineInputBorder,
-                    enabledBorder: _outlineInputBorder,
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: 'Enter a comment'),
-              ),
-            )
-          ],
-        ),
-        const SizedBox(height: 40),
-
-        /// Bottom app buttons (Details, Reports, Save, Help)
-        Row(
-          children: [
-            const SizedBox(width: 20),
-            RaisedButton(
-                child: Text('Details'),
-                onPressed: () => _showDetails(context, calculator),
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Reports'),
-                onPressed: () => _showReports(context, calculator),
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Save'),
-                onPressed: () {},
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Help'),
-                onPressed: () {},
-                color: Theme.of(context).buttonColor),
-          ],
-        )
-      ]),
+      ),
     );
   }
 

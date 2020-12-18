@@ -19,7 +19,7 @@ class _HomePageState extends State<HomePage> {
         appBar: AppBar(
           title: Text('Welcome'),
           bottom: TabBar(
-            labelColor: Colors.blue,
+            labelColor: Theme.of(context).primaryColor,
             unselectedLabelColor: Colors.white,
             labelStyle: TextStyle(fontSize: 18.0),
             indicator: BoxDecoration(

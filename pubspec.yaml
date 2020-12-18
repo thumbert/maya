@@ -31,6 +31,10 @@ dependencies:
   date:
     git:
       url: git://github.com/thumbert/date.git
+  editable:
+    git:
+      url: git://github.com/godilite/editable.git
+      ref: dev
   elec:
     git:
       url: git://github.com/thumbert/elec.git

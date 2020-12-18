@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:elec/elec.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
+import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
 import 'package:provider/provider.dart';
 import 'package:maya/models/calculator_model.dart';
 
@@ -95,8 +96,8 @@ class _LegRowsState extends State<LegRows> {
   }
 
   List<Widget> commodityRow(int row) {
-    final calculator = context.watch<CalculatorModel>();
-    var leg = calculator.legs[row];
+    final model = context.watch<CalculatorModel>();
+    var leg = model.legs[row];
 
     return [
       /// Quantity
@@ -112,7 +113,7 @@ class _LegRowsState extends State<LegRows> {
             } else {
               _qtyError[row] = null;
               leg.quantitySchedule = HourlySchedule.filled(qty);
-              calculator.setLeg(row, leg);
+              model.setLeg(row, leg);
             }
           },
           textAlign: TextAlign.right,
@@ -276,7 +277,7 @@ class _LegRowsState extends State<LegRows> {
             onSuggestionSelected: (suggestion) {
               bucketControllers[row].text = suggestion;
               leg.bucket = Bucket.parse(suggestion);
-              calculator.setLeg(row, leg);
+              model.setLeg(row, leg);
             },
             noItemsFoundBuilder: (context) =>
                 Text(' Invalid bucket', style: TextStyle(color: Colors.red)),
@@ -295,7 +296,7 @@ class _LegRowsState extends State<LegRows> {
               } else {
                 _fixPriceError[row] = null;
                 leg.fixPriceSchedule = HourlySchedule.filled(qty);
-                calculator.setLeg(row, leg);
+                model.setLeg(row, leg);
               }
             },
             textAlign: TextAlign.right,
@@ -323,7 +324,7 @@ class _LegRowsState extends State<LegRows> {
                   BoxDecoration(color: Theme.of(context).primaryColorLight),
               // child: Text('58.71', style: TextStyle(fontSize: 16),
               child: FutureBuilder<String>(
-                future: _getPrice(row, calculator),
+                future: _getPrice(row, model),
                 builder: (context, snapshot) {
                   List<Widget> children;
                   if (snapshot.hasData) {
@@ -364,12 +365,15 @@ class _LegRowsState extends State<LegRows> {
           alignment: Alignment.centerLeft,
           child: PopupMenuButton<int>(
             onSelected: (result) {
+              print('result: $result');
               if (result == 0) {
                 addRow(row);
               } else if (result == 1) {
                 removeRow(row);
               } else if (result == 2) {
                 clearRow(row);
+              } else if (result == 3) {
+                _onCustomizeQuantity(row);
               }
             },
             itemBuilder: (context) => [
@@ -412,6 +416,24 @@ class _LegRowsState extends State<LegRows> {
     await calculator.build();
     var leg = calculator.legs[row];
     return leg.price().toStringAsFixed(2);
+  }
+
+  void _onCustomizeQuantity(int row) async {
+    var child = CustomizeQuantity(row);
+    var value = await showDialog(
+      context: context,
+      builder: (context) => child,
+    );
+    print('value: $value');
+    if (value == 'edit_values') {
+      print('Will edit by hand!');
+      await showDialog(
+        context: context,
+        builder: (context) => EditQuantity(row),
+      );
+    } else if (value == 'input_file') {
+      print('Will read from file');
+    }
   }
 
   /// Add a new row after [row] index.

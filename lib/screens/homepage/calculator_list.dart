@@ -41,7 +41,7 @@ class _CalculatorListState extends State<CalculatorList> {
   }
 
   void _onReportTap(BuildContext context, int calculatorId) {
-    Navigator.pushNamed(context, reportsRoute,
+    Navigator.pushNamed(context, '/calculators',
         arguments: {'calculatorId': calculatorId});
   }
 }
