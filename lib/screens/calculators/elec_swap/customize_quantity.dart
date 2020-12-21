@@ -3,7 +3,7 @@ library screens.calculators.elec_swap.customize_quanitity;
 import 'package:date/date.dart';
 import 'package:editable/editable.dart';
 import 'package:flutter/material.dart';
-import 'package:maya/models/calculator_model.dart';
+import 'package:maya/models/new/calculator_model.dart';
 import 'package:provider/provider.dart';
 
 class CustomizeQuantity extends StatefulWidget {
@@ -67,7 +67,7 @@ class EditQuantity extends StatelessWidget {
   Widget build(BuildContext context) {
     final model = context.watch<CalculatorModel>();
 
-    var aux = model.legs[rowIndex].quantity;
+    var aux = model.legs[rowIndex].quantity();
     var rows = aux
         .map((e) => {
               'month': (e.interval as Month).toIso8601String(),

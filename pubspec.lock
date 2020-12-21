@@ -208,7 +208,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "1bdd4b8144fd92ceacf804e2d2de6747b506c37b"
+      resolved-ref: "5bc1c7b8573a7847cc7810a2c6fd02ebf6eaea28"
       url: "git://github.com/thumbert/elec.git"
     source: git
     version: "1.0.0"

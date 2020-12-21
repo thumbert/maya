@@ -5,7 +5,7 @@ import 'package:elec/elec.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
 import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
 import 'package:provider/provider.dart';
-import 'package:maya/models/calculator_model.dart';
+import 'package:maya/models/new/calculator_model.dart';
 
 class LegRows extends StatefulWidget {
   LegRows({Key key}) : super(key: key);
@@ -412,9 +412,9 @@ class _LegRowsState extends State<LegRows> {
     ];
   }
 
-  Future<String> _getPrice(int row, CalculatorModel calculator) async {
-    await calculator.build();
-    var leg = calculator.legs[row];
+  Future<String> _getPrice(int row, CalculatorModel model) async {
+    await model.build();
+    var leg = model.legs[row];
     return leg.price().toStringAsFixed(2);
   }
 
@@ -440,7 +440,7 @@ class _LegRowsState extends State<LegRows> {
   void addRow(int row) {
     final calculator = context.read<CalculatorModel>();
 
-    var newLeg = calculator.legs[row].copy();
+    var newLeg = calculator.legs[row].copyWith();
     calculator.addLeg(row + 1, newLeg);
     // print('Adding row: ${row + 1}');
 

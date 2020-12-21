@@ -1,5 +1,7 @@
 library screens.homepage.homepage;
 
+import 'dart:ui';
+
 import 'package:flutter/material.dart';
 import 'package:maya/screens/homepage/calculator_list.dart';
 import 'package:maya/screens/homepage/load_existing.dart';
@@ -17,7 +19,13 @@ class _HomePageState extends State<HomePage> {
       length: 2,
       child: Scaffold(
         appBar: AppBar(
-          title: Text('Welcome'),
+          title: Text(
+            'Maya',
+            style: TextStyle(
+                fontFamily: 'Tangerine',
+                fontSize: 48,
+                fontWeight: FontWeight.w600),
+          ),
           bottom: TabBar(
             labelColor: Theme.of(context).primaryColor,
             unselectedLabelColor: Colors.white,
@@ -39,8 +47,8 @@ class _HomePageState extends State<HomePage> {
         body: TabBarView(
           children: [
             Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.end,
+                mainAxisAlignment: MainAxisAlignment.start,
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [CalculatorList()]),
             Center(child: LoadExistingForm()),
           ],

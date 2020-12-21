@@ -4,7 +4,7 @@ import 'package:date/date.dart' as date;
 import 'package:timezone/timezone.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
-import 'package:maya/models/calculator_model.dart';
+import 'package:maya/models/new/calculator_model.dart';
 
 class AsOfDateUi extends StatefulWidget {
   AsOfDateUi();

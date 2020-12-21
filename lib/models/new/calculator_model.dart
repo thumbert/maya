@@ -1,4 +1,4 @@
-library model.calculator_model;
+library model.new_.calculator_model;
 
 import 'package:http/http.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';

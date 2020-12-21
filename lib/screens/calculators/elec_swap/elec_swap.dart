@@ -3,7 +3,7 @@ library screens.calculators.elec_swap;
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:maya/models/calculator_model.dart';
+import 'package:maya/models/new/calculator_model.dart';
 import 'package:maya/screens/calculators/as_of_date.dart';
 import 'package:maya/screens/calculators/elec_swap/leg_rows.dart';
 import 'package:maya/screens/calculators/term.dart';
