@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:maya/models/new/calculator_model.dart';
+import 'package:maya/models/new/calculator_model/elec_daily_option.dart' as edo;
+import 'package:maya/screens/calculators/elec_daily_option/elec_daily_option.dart';
 import 'package:maya/screens/calculators/elec_swap/elec_swap.dart';
+import 'package:maya/screens/error404.dart';
 import 'package:maya/screens/homepage/homepage.dart';
 import 'package:provider/provider.dart';
 import 'package:timezone/data/latest.dart';
@@ -19,16 +22,22 @@ class MyApp extends StatelessWidget {
         providers: [
           ChangeNotifierProvider(
               create: (context) => CalculatorModel()..init()),
+          ChangeNotifierProvider(
+              create: (context) => edo.CalculatorModel()..init()),
         ],
         child: MaterialApp(
-          title: 'Maya - A modern commodity pricing interface',
+          title: 'Maya',
           onGenerateRoute: _routes(),
+          initialRoute: HomePage.route,
+          home: HomePage(),
+          onUnknownRoute: (settings) {
+            return MaterialPageRoute(builder: (_) => Error404());
+          },
           theme: ThemeData(
             primarySwatch: Colors.indigo,
             buttonColor: Colors.orange[200],
             visualDensity: VisualDensity.adaptivePlatformDensity,
           ),
-          home: HomePage(),
         ));
   }
 }
@@ -41,12 +50,13 @@ RouteFactory _routes() {
     Widget screen;
     switch (route) {
       case '/calculators/0':
-        screen = ElecSwapCalculatorUi(
-          title: 'Electricity swap calculator',
-        );
+        screen = ElecSwapCalculatorUi();
+        break;
+      case '/calculators/2':
+        screen = ElecDailyOptionUi();
         break;
       default:
-        screen = Text('Sorry not implemented yet! Excuse');
+        screen = Error404();
         break;
     }
     return MaterialPageRoute(builder: (context) => screen);

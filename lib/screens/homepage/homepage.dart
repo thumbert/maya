@@ -8,6 +8,9 @@ import 'package:maya/screens/homepage/load_existing.dart';
 
 class HomePage extends StatefulWidget {
   HomePage({Key key}) : super(key: key);
+
+  static const String route = '/';
+
   @override
   _HomePageState createState() => _HomePageState();
 }

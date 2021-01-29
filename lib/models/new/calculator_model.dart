@@ -1,5 +1,6 @@
 library model.new_.calculator_model;
 
+import 'package:elec/calculators.dart';
 import 'package:http/http.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:date/date.dart';
@@ -8,7 +9,6 @@ import 'package:elec/elec.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:timezone/timezone.dart';
-import 'package:elec/src/risk_system/pricing/calculators/base/cache_provider.dart';
 import 'package:elec/src/risk_system/pricing/reports/report.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
 
@@ -19,6 +19,15 @@ class CalculatorModel extends ChangeNotifier {
 
   CalculatorModel() {
     init(); // don't need to do it here
+  }
+
+  /// From a mongo document.
+  CalculatorModel.fromJson(Map<String, dynamic> x) {
+    if (x['calculatorType'] == 'elec_swap') {
+      _calculator = ElecSwapCalculator.fromJson(x);
+    } else {
+      throw ArgumentError('Not supported yet!');
+    }
   }
 
   set asOfDate(Date asOfDate) {
@@ -59,7 +68,7 @@ class CalculatorModel extends ChangeNotifier {
 
   List<CommodityLeg> get legs => _calculator.legs;
 
-  void build() => _calculator.build();
+  Future<void> build() => _calculator.build();
 
   num dollarPrice() => _calculator.dollarPrice();
 

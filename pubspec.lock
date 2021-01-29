@@ -21,7 +21,7 @@ packages:
       name: analyzer
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.41.1"
+    version: "0.41.2"
   archive:
     dependency: transitive
     description:
@@ -36,13 +36,6 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.6.0"
-  asn1lib:
-    dependency: transitive
-    description:
-      name: asn1lib
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.6.5"
   async:
     dependency: transitive
     description:
@@ -56,7 +49,7 @@ packages:
       name: basic_utils
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.6.3"
+    version: "2.7.0"
   boolean_selector:
     dependency: transitive
     description:
@@ -119,7 +112,7 @@ packages:
       name: coverage
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.14.2"
+    version: "0.15.1"
   crypto:
     dependency: transitive
     description:
@@ -153,7 +146,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: dfbc05bb128758e321db072f288c27c4a5e37741
+      resolved-ref: "8946e185a9ea8bfad4d456381c97cad8a212db97"
       url: "git://github.com/thumbert/dama.git"
     source: git
     version: "1.0.0"
@@ -170,13 +163,13 @@ packages:
       name: dart_style
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.3.10"
+    version: "1.3.11"
   date:
     dependency: "direct main"
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "2c1bcdb2f71846f0acc81873478d5b6f5cbb7ccd"
+      resolved-ref: a60718bb4bfff60cf0b7a8cbcbef70db271b9c03
       url: "git://github.com/thumbert/date.git"
     source: git
     version: "2.4.0"
@@ -208,7 +201,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "5bc1c7b8573a7847cc7810a2c6fd02ebf6eaea28"
+      resolved-ref: "380bb1e10332ed865d9218d969d60ee2c6e7e9f9"
       url: "git://github.com/thumbert/elec.git"
     source: git
     version: "1.0.0"
@@ -217,7 +210,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "7c557240b1f88521cdffa7f7e98bbaab8a587daa"
+      resolved-ref: "0575c596a0e40087189e64e5ac12d66b130df47d"
       url: "git://github.com/thumbert/elec-server.git"
     source: git
     version: "1.0.0"
@@ -260,7 +253,7 @@ packages:
       name: flutter_advanced_switch
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.9+3"
+    version: "0.0.9+4"
   flutter_dotenv:
     dependency: "direct main"
     description:
@@ -307,7 +300,7 @@ packages:
       name: flutter_typeahead
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.9.1"
+    version: "1.9.3"
   flutter_web_plugins:
     dependency: transitive
     description: flutter
@@ -333,7 +326,7 @@ packages:
       name: google_fonts
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.1"
+    version: "1.1.2"
   googleapis:
     dependency: transitive
     description:
@@ -347,7 +340,7 @@ packages:
       name: googleapis_auth
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.12"
+    version: "0.2.12+1"
   grpc:
     dependency: transitive
     description:
@@ -426,7 +419,7 @@ packages:
       name: json_annotation
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "3.0.1"
+    version: "3.1.1"
   logging:
     dependency: transitive
     description:
@@ -503,7 +496,7 @@ packages:
       name: node_preamble
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.4.12"
+    version: "1.4.13"
   package_config:
     dependency: transitive
     description:
@@ -524,7 +517,7 @@ packages:
       name: path_provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.6.24"
+    version: "1.6.27"
   path_provider_linux:
     dependency: transitive
     description:
@@ -538,7 +531,7 @@ packages:
       name: path_provider_macos
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.0.4+6"
+    version: "0.0.4+8"
   path_provider_platform_interface:
     dependency: transitive
     description:
@@ -587,7 +580,7 @@ packages:
       name: pointycastle
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.0.2"
+    version: "2.0.1"
   pool:
     dependency: transitive
     description:
@@ -615,7 +608,7 @@ packages:
       name: provider
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.3.2+3"
+    version: "4.3.3"
   pub_semver:
     dependency: transitive
     description:
@@ -650,21 +643,21 @@ packages:
       name: shelf_packages_handler
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "2.0.0"
+    version: "2.0.1"
   shelf_static:
     dependency: transitive
     description:
       name: shelf_static
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.9+1"
+    version: "0.2.9+2"
   shelf_web_socket:
     dependency: transitive
     description:
       name: shelf_web_socket
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.2.3"
+    version: "0.2.4"
   sky_engine:
     dependency: transitive
     description: flutter
@@ -741,7 +734,7 @@ packages:
       name: test
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.16.0-nullsafety.13"
+    version: "1.16.0-nullsafety.17"
   test_api:
     dependency: transitive
     description:
@@ -755,13 +748,13 @@ packages:
       name: test_core
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.3.12-nullsafety.12"
+    version: "0.3.12-nullsafety.15"
   timeseries:
     dependency: transitive
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "307e666420bb569bbdcc3a333ad843fc129eec99"
+      resolved-ref: "7705620f9e7dfe6b54da06dea93128f991360fbe"
       url: "git://github.com/thumbert/timeseries.git"
     source: git
     version: "2.0.1"
@@ -792,14 +785,7 @@ packages:
       name: uri
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "0.11.3+1"
-  utf:
-    dependency: transitive
-    description:
-      name: utf
-      url: "https://pub.dartlang.org"
-    source: hosted
-    version: "0.9.0+5"
+    version: "0.11.4"
   uuid:
     dependency: transitive
     description:
@@ -834,7 +820,7 @@ packages:
       name: web_socket_channel
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.1.0"
+    version: "1.2.0"
   webkit_inspection_protocol:
     dependency: transitive
     description:

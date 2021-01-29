@@ -1,23 +1,20 @@
-library screens.calculators.elec_swap;
+library screens.calculators.elec_daily_option;
 
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:maya/models/new/calculator_model.dart';
+import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
 import 'package:maya/screens/calculators/as_of_date.dart';
-import 'package:maya/screens/calculators/elec_swap/leg_rows.dart';
+import 'leg_rows.dart';
 import 'package:maya/screens/calculators/term.dart';
-import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ElecSwapCalculatorUi extends StatelessWidget {
-  ElecSwapCalculatorUi({Key key}) : super(key: key);
+class ElecDailyOptionUi extends StatelessWidget {
+  ElecDailyOptionUi({Key key}) : super(key: key);
 
-  final String title = 'Electricity swap calculator';
-  static const String route = '/calculators/0';
+  final String title = 'Electricity daily option calculator';
 
   final _formKey = GlobalKey<FormState>();
   static final NumberFormat _dollarPriceFmt =
