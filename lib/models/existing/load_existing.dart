@@ -4,7 +4,7 @@ import 'dart:convert';
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:http/http.dart' as http;
-import 'package:maya/models/new/calculator_model.dart';
+import 'package:maya/models/new/calculator_model/elec_swap.dart';
 
 class LoadExisting {
   LoadExisting();

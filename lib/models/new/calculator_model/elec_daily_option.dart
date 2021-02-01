@@ -7,7 +7,6 @@ import 'package:date/date.dart';
 import 'package:elec/calculators/elec_daily_option.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
-import 'package:elec/src/risk_system/pricing/reports/report.dart';
 import 'package:timeseries/timeseries.dart';
 
 class CalculatorModel extends ChangeNotifier {
@@ -28,18 +27,10 @@ class CalculatorModel extends ChangeNotifier {
     }
   }
 
-  set asOfDate(Date asOfDate) {
-    _calculator.asOfDate = asOfDate;
-    notifyListeners();
-  }
-
+  set asOfDate(Date asOfDate) => _calculator.asOfDate = asOfDate;
   Date get asOfDate => _calculator.asOfDate;
 
-  set term(Term term) {
-    _calculator.term = term;
-    notifyListeners();
-  }
-
+  set term(Term term) => _calculator.term = term;
   Term get term => _calculator.term;
 
   set buySell(BuySell buySell) {
@@ -66,35 +57,40 @@ class CalculatorModel extends ChangeNotifier {
 
   /// set the quantity for this leg from a number
   void setFixPrice(int i, num value) {
-    var months = term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
+    var months =
+        legs[i].term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
     _calculator.legs[i].fixPrice = TimeSeries.fill(months, value);
     notifyListeners();
   }
 
   /// set the quantity for this leg from a number
   void setQuantity(int i, num value) {
-    var months = term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
+    var months =
+        legs[i].term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
     _calculator.legs[i].quantity = TimeSeries.fill(months, value);
     notifyListeners();
   }
 
   /// set the vol Adjustment for this leg
   void setPriceAdjustment(int i, num value) {
-    var months = term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
+    var months =
+        legs[i].term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
     _calculator.legs[i].priceAdjustment = TimeSeries.fill(months, value);
     notifyListeners();
   }
 
   /// set the strike for this leg
   void setStrike(int i, num value) {
-    var months = term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
+    var months =
+        legs[i].term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
     _calculator.legs[i].strike = TimeSeries.fill(months, value);
     notifyListeners();
   }
 
   /// set the vol Adjustment for this leg.  The value is in percent!
   void setVolAdjustment(int i, num value) {
-    var months = term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
+    var months =
+        legs[i].term.interval.splitLeft((dt) => Month.fromTZDateTime(dt));
     _calculator.legs[i].volatilityAdjustment =
         TimeSeries.fill(months, value / 100);
     notifyListeners();

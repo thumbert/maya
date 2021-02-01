@@ -1,4 +1,4 @@
-library model.new_.calculator_model;
+library model.new_.calculator_model.elec_swap;
 
 import 'package:elec/calculators.dart';
 import 'package:http/http.dart';
@@ -32,14 +32,12 @@ class CalculatorModel extends ChangeNotifier {
 
   set asOfDate(Date asOfDate) {
     _calculator.asOfDate = asOfDate;
-    notifyListeners();
   }
 
   Date get asOfDate => _calculator.asOfDate;
 
   set term(Term term) {
     _calculator.term = term;
-    notifyListeners();
   }
 
   Term get term => _calculator.term;

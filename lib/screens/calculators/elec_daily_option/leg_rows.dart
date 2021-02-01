@@ -2,6 +2,8 @@ import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:elec/elec.dart';
+import 'package:maya/models/asofdate_model.dart';
+import 'package:maya/models/term_model.dart';
 import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
 import 'package:provider/provider.dart';
 import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
@@ -26,7 +28,6 @@ class _LegRowsState extends State<LegRows> {
 
   final qtyControllers = <TextEditingController>[];
   final regionControllers = <TextEditingController>[];
-  final serviceControllers = <TextEditingController>[];
   final curveControllers = <TextEditingController>[];
   final bucketControllers = <TextEditingController>[];
   final callPutControllers = <TextEditingController>[];
@@ -44,7 +45,6 @@ class _LegRowsState extends State<LegRows> {
     for (var i = 0; i < calculator.legs.length; i++) {
       qtyControllers[i].dispose();
       regionControllers[i].dispose();
-      serviceControllers[i].dispose();
       curveControllers[i].dispose();
       bucketControllers[i].dispose();
       callPutControllers[i].dispose();
@@ -60,6 +60,7 @@ class _LegRowsState extends State<LegRows> {
   void initState() {
     super.initState();
     final calculator = context.read<CalculatorModel>();
+
     for (var i = 0; i < calculator.legs.length; i++) {
       _qtyError.add(null); // TODO: may need to check inputs
       _regionError.add(null);
@@ -72,7 +73,6 @@ class _LegRowsState extends State<LegRows> {
         ..text = calculator.legs[i].showQuantity().toString()
         ..addListener(() {}));
       regionControllers.add(TextEditingController()..text = 'isone');
-      serviceControllers.add(TextEditingController()..text = 'energy');
       curveControllers.add(TextEditingController()..text = 'hub_da_lmp');
       bucketControllers
           .add(TextEditingController()..text = calculator.legs[i].bucket.name);
@@ -108,8 +108,8 @@ class _LegRowsState extends State<LegRows> {
       7: IntrinsicColumnWidth(), // priceAdjust
       8: IntrinsicColumnWidth(), // volAdjust
       9: IntrinsicColumnWidth(), // fix price
-      10: FixedColumnWidth(80), // price
-      // 7: FixedColumnWidth(20), // menu
+      10: IntrinsicColumnWidth(), // price
+      // 11: FixedColumnWidth(20), // menu
     }, children: [
       TableRow(children: header()),
       ...[
@@ -133,13 +133,15 @@ class _LegRowsState extends State<LegRows> {
         child: TextField(
             controller: qtyControllers[row],
             onChanged: (value) {
-              var qty = num.tryParse(value);
-              if (qty == null || value == '') {
-                _qtyError[row] = 'Error';
-              } else {
-                _qtyError[row] = null;
-                model.setQuantity(row, qty);
-              }
+              setState(() {
+                var qty = num.tryParse(value);
+                if (qty == null || value == '') {
+                  _qtyError[row] = 'Error';
+                } else {
+                  _qtyError[row] = null;
+                  model.setQuantity(row, qty);
+                }
+              });
             },
             textAlign: TextAlign.right,
             scrollPadding: EdgeInsets.all(5),
@@ -263,24 +265,31 @@ class _LegRowsState extends State<LegRows> {
           )),
 
       /// Strike
-      Container(
-        margin: EdgeInsetsDirectional.only(end: _columnSpace),
-        color: Colors.grey[300],
-        child: TextField(
-            controller: strikeControllers[row],
-            onChanged: (value) {
-              var strike = num.tryParse(value);
-              if (strike == null || value == '') {
-                _strikeError[row] = 'Error';
-              } else {
-                _strikeError[row] = null;
-                model.setStrike(row, strike);
-              }
-            },
-            textAlign: TextAlign.right,
-            scrollPadding: EdgeInsets.all(5),
-            decoration: _getDecoration(_strikeError[row])),
-      ),
+      ConstrainedBox(
+          constraints: BoxConstraints(
+            minWidth: 55,
+            minHeight: 37,
+          ),
+          child: Container(
+            margin: EdgeInsetsDirectional.only(end: _columnSpace),
+            color: Colors.grey[300],
+            child: TextField(
+                controller: strikeControllers[row],
+                onChanged: (value) {
+                  setState(() {
+                    var strike = num.tryParse(value);
+                    if (strike == null || value == '' || strike <= 0) {
+                      _strikeError[row] = 'Error';
+                    } else {
+                      _strikeError[row] = null;
+                      model.setStrike(row, strike);
+                    }
+                  });
+                },
+                textAlign: TextAlign.right,
+                scrollPadding: EdgeInsets.all(5),
+                decoration: _getDecoration(_strikeError[row])),
+          )),
 
       /// Underlying price
       ConstrainedBox(
@@ -342,13 +351,20 @@ class _LegRowsState extends State<LegRows> {
           child: TextField(
               controller: priceAdjControllers[row],
               onChanged: (value) {
-                var priceAdj = num.tryParse(value);
-                if (priceAdj == null || value == '') {
-                  _priceAdjustError[row] = 'Error';
-                } else {
-                  _priceAdjustError[row] = null;
-                  model.setPriceAdjustment(row, priceAdj);
-                }
+                setState(() {
+                  if (value == '') {
+                    model.setPriceAdjustment(row, 0);
+                    _priceAdjustError[row] = null;
+                  } else {
+                    var priceAdj = num.tryParse(value);
+                    if (priceAdj == null) {
+                      _priceAdjustError[row] = 'Error';
+                    } else {
+                      _priceAdjustError[row] = null;
+                      model.setPriceAdjustment(row, priceAdj);
+                    }
+                  }
+                });
               },
               textAlign: TextAlign.right,
               scrollPadding: EdgeInsets.all(5),
@@ -358,29 +374,35 @@ class _LegRowsState extends State<LegRows> {
 
       /// Vol Adjust
       ConstrainedBox(
-        constraints: BoxConstraints(
-          minWidth: 55,
-          minHeight: 37,
-        ),
-        child: Container(
-          margin: EdgeInsetsDirectional.only(end: _columnSpace),
-          color: Colors.grey[300],
-          child: TextField(
-              controller: volAdjControllers[row],
-              onChanged: (value) {
-                var volAdj = num.tryParse(value);
-                if (volAdj == null || value == '') {
-                  _volAdjustError[row] = 'Error';
-                } else {
-                  _volAdjustError[row] = null;
-                  model.setVolAdjustment(row, volAdj);
-                }
-              },
-              textAlign: TextAlign.right,
-              scrollPadding: EdgeInsets.all(5),
-              decoration: _getDecoration(_volAdjustError[row])),
-        ),
-      ),
+          constraints: BoxConstraints(
+            minWidth: 55,
+            minHeight: 37,
+          ),
+          child: Container(
+            margin: EdgeInsetsDirectional.only(end: _columnSpace),
+            color: Colors.grey[300],
+            child: TextField(
+                controller: volAdjControllers[row],
+                onChanged: (value) {
+                  setState(() {
+                    if (value == '') {
+                      model.setVolAdjustment(row, 0);
+                      _volAdjustError[row] = null;
+                    } else {
+                      var volAdj = num.tryParse(value);
+                      if (volAdj == null) {
+                        _volAdjustError[row] = 'Error';
+                      } else {
+                        _volAdjustError[row] = null;
+                        model.setVolAdjustment(row, volAdj);
+                      }
+                    }
+                  });
+                },
+                textAlign: TextAlign.right,
+                scrollPadding: EdgeInsets.all(5),
+                decoration: _getDecoration(_volAdjustError[row])),
+          )),
 
       /// Fix price
       ConstrainedBox(
@@ -394,13 +416,20 @@ class _LegRowsState extends State<LegRows> {
           child: TextField(
               controller: fixedPriceControllers[row],
               onChanged: (value) {
-                var fp = num.tryParse(value);
-                if (fp == null || value == '') {
-                  _fixPriceError[row] = 'Error';
-                } else {
-                  _fixPriceError[row] = null;
-                  model.setFixPrice(row, fp);
-                }
+                setState(() {
+                  if (value == '') {
+                    model.setFixPrice(row, 0);
+                    _fixPriceError[row] = null;
+                  } else {
+                    var fp = num.tryParse(value);
+                    if (fp == null) {
+                      _fixPriceError[row] = 'Error';
+                    } else {
+                      _fixPriceError[row] = null;
+                      model.setFixPrice(row, fp);
+                    }
+                  }
+                });
               },
               textAlign: TextAlign.right,
               scrollPadding: EdgeInsets.all(5),
@@ -411,7 +440,7 @@ class _LegRowsState extends State<LegRows> {
       /// Price
       ConstrainedBox(
           constraints: BoxConstraints(
-            minWidth: 70,
+            minWidth: 60,
             minHeight: 37,
           ),
           child: Container(
@@ -461,7 +490,6 @@ class _LegRowsState extends State<LegRows> {
           alignment: Alignment.centerLeft,
           child: PopupMenuButton<int>(
             onSelected: (result) {
-              print('result: $result');
               if (result == 0) {
                 addRow(row);
               } else if (result == 1) {
@@ -508,7 +536,7 @@ class _LegRowsState extends State<LegRows> {
     ];
   }
 
-  /// get the price of the option leg
+  /// get the price of the underlying leg
   Future<String> _getUnderlyingPrice(int row, CalculatorModel model) async {
     await model.build();
     var leg = model.legs[row];
@@ -517,9 +545,7 @@ class _LegRowsState extends State<LegRows> {
 
   /// get the price of the option leg
   Future<String> _getPrice(int row, CalculatorModel model) async {
-    print(model.legs[0].strike);
     await model.build();
-    print('here');
     var leg = model.legs[row];
     return leg.price().toStringAsFixed(2);
   }
@@ -553,6 +579,9 @@ class _LegRowsState extends State<LegRows> {
     _qtyError.insert(row + 1, null);
     _regionError.insert(row + 1, null);
     _curveError.insert(row + 1, null);
+    _strikeError.insert(row + 1, null);
+    _priceAdjustError.insert(row + 1, null);
+    _volAdjustError.insert(row + 1, null);
     _fixPriceError.insert(row + 1, null);
     qtyControllers.insert(
         row + 1,
@@ -561,16 +590,25 @@ class _LegRowsState extends State<LegRows> {
           ..addListener(() {}));
     regionControllers.insert(
         row + 1, TextEditingController()..text = regionControllers[row].text);
-    serviceControllers.insert(
-        row + 1, TextEditingController()..text = serviceControllers[row].text);
     curveControllers.insert(
         row + 1, TextEditingController()..text = curveControllers[row].text);
     bucketControllers.insert(
         row + 1, TextEditingController()..text = bucketControllers[row].text);
-    fixedPriceControllers.insert(
-        row + 1,
-        TextEditingController()
-          ..text = calculator.legs[row + 1].showFixPrice().toString());
+    callPutControllers.insert(
+        row + 1, TextEditingController()..text = callPutControllers[row].text);
+    strikeControllers.insert(
+        row + 1, TextEditingController()..text = strikeControllers[row].text);
+    priceAdjControllers.insert(
+        row + 1, TextEditingController()..text = priceAdjControllers[row].text);
+    volAdjControllers.insert(
+        row + 1, TextEditingController()..text = volAdjControllers[row].text);
+    fixedPriceControllers.insert(row + 1,
+        TextEditingController()..text = fixedPriceControllers[row].text);
+
+    // fixedPriceControllers.insert(
+    //     row + 1,
+    //     TextEditingController()
+    //       ..text = calculator.legs[row + 1].showFixPrice().toString());
   }
 
   /// Clear all inputs [row] from the table.  Calculator won't price.
@@ -588,12 +626,19 @@ class _LegRowsState extends State<LegRows> {
       _qtyError.removeAt(row);
       _regionError.removeAt(row);
       _curveError.removeAt(row);
+      _strikeError.removeAt(row);
+      _priceAdjustError.removeAt(row);
+      _volAdjustError.removeAt(row);
       _fixPriceError.removeAt(row);
+
       qtyControllers.removeAt(row);
       regionControllers.removeAt(row);
-      serviceControllers.removeAt(row);
       curveControllers.removeAt(row);
       bucketControllers.removeAt(row);
+      callPutControllers.removeAt(row);
+      strikeControllers.removeAt(row);
+      priceAdjControllers.removeAt(row);
+      volAdjControllers.removeAt(row);
       fixedPriceControllers.removeAt(row);
     }
   }
@@ -636,7 +681,7 @@ class _LegRowsState extends State<LegRows> {
       Text('Price\nAdj', style: _style),
       Text('Vol\nAdj', style: _style),
       Text('Fix\nPrice   ', style: _style),
-      Text('\nPrice   ', style: _style),
+      Text('\nPrice', style: _style),
       Text(''),
     ];
   }

@@ -3,7 +3,7 @@ library screens.calculators.elec_swap.customize_quanitity;
 import 'package:date/date.dart';
 import 'package:editable/editable.dart';
 import 'package:flutter/material.dart';
-import 'package:maya/models/new/calculator_model.dart';
+import 'package:maya/models/new/calculator_model/elec_swap.dart';
 import 'package:provider/provider.dart';
 
 class CustomizeQuantity extends StatefulWidget {

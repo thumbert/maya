@@ -5,7 +5,7 @@ import 'package:elec/elec.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
 import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
 import 'package:provider/provider.dart';
-import 'package:maya/models/new/calculator_model.dart';
+import 'package:maya/models/new/calculator_model/elec_swap.dart';
 
 class LegRows extends StatefulWidget {
   LegRows({Key key}) : super(key: key);

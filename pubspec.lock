@@ -201,7 +201,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "380bb1e10332ed865d9218d969d60ee2c6e7e9f9"
+      resolved-ref: "7c526de7d63be2e40881a2821e2b5b3410df0e9d"
       url: "git://github.com/thumbert/elec.git"
     source: git
     version: "1.0.0"
@@ -834,7 +834,7 @@ packages:
       name: win32
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "1.7.4"
+    version: "1.7.4+1"
   xdg_directories:
     dependency: transitive
     description:
