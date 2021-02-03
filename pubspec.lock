@@ -201,7 +201,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "7c526de7d63be2e40881a2821e2b5b3410df0e9d"
+      resolved-ref: "04bca28078c4b3e0e065f1bb5f709aab19ab58c2"
       url: "git://github.com/thumbert/elec.git"
     source: git
     version: "1.0.0"
@@ -210,7 +210,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "0575c596a0e40087189e64e5ac12d66b130df47d"
+      resolved-ref: "12947f78799cd084e19ec5676ec60715ae5fbc84"
       url: "git://github.com/thumbert/elec-server.git"
     source: git
     version: "1.0.0"
@@ -274,7 +274,7 @@ packages:
       name: flutter_keyboard_visibility
       url: "https://pub.dartlang.org"
     source: hosted
-    version: "4.0.2"
+    version: "4.0.3"
   flutter_keyboard_visibility_platform_interface:
     dependency: transitive
     description:
@@ -369,6 +369,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "1.0.1"
+  http_methods:
+    dependency: transitive
+    description:
+      name: http_methods
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "1.0.0"
   http_multi_server:
     dependency: transitive
     description:
@@ -644,6 +651,13 @@ packages:
       url: "https://pub.dartlang.org"
     source: hosted
     version: "2.0.1"
+  shelf_router:
+    dependency: transitive
+    description:
+      name: shelf_router
+      url: "https://pub.dartlang.org"
+    source: hosted
+    version: "0.7.4"
   shelf_static:
     dependency: transitive
     description:

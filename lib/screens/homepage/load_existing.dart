@@ -1,5 +1,7 @@
 library homepage.load_existing;
 
+import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:maya/models/existing/load_existing.dart';
@@ -11,14 +13,15 @@ class LoadExistingForm extends StatefulWidget {
 
 class _LoadExistingFormState extends State<LoadExistingForm> {
   _LoadExistingFormState();
-  final LoadExisting model = LoadExisting();
+  final LoadExisting model = LoadExisting(rootUrl: DotEnv().env['rootUrl2']);
   final _userIdController = TextEditingController();
   final _calculatorNameController = TextEditingController();
 
+  String userId;
+  String calculatorName;
+
   @override
   Widget build(BuildContext context) {
-    String userId;
-    String calculatorName;
     var _userSuggestions = <String>[];
     var _calcSuggestions = <String>[];
 
@@ -27,12 +30,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            SizedBox(height: 24.0),
-            // Text(
-            //   'Load an existing calculator',
-            //   style: TextStyle(fontSize: 24),
-            // ),
-            SizedBox(height: 24.0),
+            SizedBox(height: 48.0),
 
             /// Employee Id
             Container(
@@ -42,6 +40,8 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                     controller: _userIdController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
+                        labelStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         labelText: 'Employee Id')),
                 suggestionsCallback: (pattern) async {
                   var _allUsersCache = await model.getUsers();
@@ -64,6 +64,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                     Text(' Unknown user', style: TextStyle(color: Colors.red)),
               ),
             ),
+            SizedBox(height: 24.0),
 
             /// Calculator name
             Container(
@@ -73,6 +74,8 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                     controller: _calculatorNameController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
+                        labelStyle:
+                            TextStyle(color: Theme.of(context).primaryColor),
                         labelText: 'Calculator name')),
                 suggestionsCallback: (pattern) async {
                   var _allCalculators = await model.getCalculatorNames(userId);
@@ -94,45 +97,26 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                 noItemsFoundBuilder: (context) => Text(' Unknown calculator',
                     style: TextStyle(color: Colors.red)),
               ),
-
-              // child: TextField(
-              //   decoration:
-              //       InputDecoration(filled: true, labelText: 'Calculator name'),
-              // ),
             ),
             SizedBox(height: 128.0),
+
+            /// Load button
             RaisedButton(
               child: Text('Load'),
               onPressed: () {
                 // need to navigator it ...
+                _loadCalculator();
               },
               color: Theme.of(context).buttonColor,
-              // textColor: Colors.black,
             )
           ],
         ));
   }
 
-  // void showCalculators() async {
-  //   var child = SimpleDialog(
-  //     title: Text('${model.userId}\'s calculators:'),
-  //     children: [
-  //       SimpleDialogOption(
-  //           child: ListTile(
-  //               title: Text('First one'),
-  //               leading: GestureDetector(
-  //                 behavior: HitTestBehavior.opaque,
-  //                 child: Icon(
-  //                   Icons.label_important_outlined,
-  //                   color: Theme.of(context).primaryColor,
-  //                 ),
-  //               )))
-  //     ],
-  //   );
-  //
-  //   final value = await showDialog(
-  //     context: context,
-  //     builder: (context) => child,
-  //   );
-  // }
+  void _loadCalculator() async {
+    var aux = await model.getCalculator(userId, calculatorName);
+    if (aux is ElecSwapCalculator) {
+      print(aux.toJson());
+    }
+  }
 }

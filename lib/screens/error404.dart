@@ -35,7 +35,7 @@ class Error404 extends StatelessWidget {
                   ]),
             ),
             const SizedBox(width: 20),
-            Image(image: AssetImage('images/robot.png')),
+            Image.asset('assets/images/robot.png'),
           ],
         ),
       ]),
