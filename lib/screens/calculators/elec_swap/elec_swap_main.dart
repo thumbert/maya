@@ -4,6 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
 import 'package:maya/models/new/calculator_model/elec_swap.dart';
 import 'package:maya/models/term_model.dart';
+import 'package:maya/models/edit_quantity.dart';
 import 'package:maya/screens/calculators/elec_swap/elec_swap.dart';
 import 'package:provider/provider.dart';
 

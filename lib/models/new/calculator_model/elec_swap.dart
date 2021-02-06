@@ -82,8 +82,8 @@ class CalculatorModel extends ChangeNotifier {
     _calculator = ElecSwapCalculator()
       ..cacheProvider =
           CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl'])
-      ..term = Term.parse('Jan21-Jun21', UTC)
-      ..asOfDate = Date(2020, 5, 29)
+      ..term = Term.parse('Jul21-Aug21', UTC)
+      ..asOfDate = Date.today()
       ..buySell = BuySell.buy
       ..legs = [
         CommodityLeg(

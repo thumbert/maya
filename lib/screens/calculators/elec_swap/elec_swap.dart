@@ -1,5 +1,6 @@
 library screens.calculators.elec_swap;
 
+import 'package:date/date.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
@@ -13,8 +14,15 @@ import 'package:intl/intl.dart';
 import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
-class ElecSwapCalculatorUi extends StatelessWidget {
+class ElecSwapCalculatorUi extends StatefulWidget {
   ElecSwapCalculatorUi({Key key}) : super(key: key);
+
+  @override
+  State<StatefulWidget> createState() => _EsState();
+}
+
+class _EsState extends State<ElecSwapCalculatorUi> {
+  _EsState();
 
   final _formKey = GlobalKey<FormState>();
   static final NumberFormat _dollarPriceFmt =
@@ -25,8 +33,6 @@ class ElecSwapCalculatorUi extends StatelessWidget {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
-    termModel.init(calculator.term);
-    asOfDateModel.init(calculator.asOfDate);
 
     return Form(
       key: _formKey,
@@ -85,8 +91,7 @@ class ElecSwapCalculatorUi extends StatelessWidget {
                 decoration:
                     BoxDecoration(color: Theme.of(context).primaryColorLight),
                 child: FutureBuilder<String>(
-                    future:
-                        _dollarReprice(calculator, asOfDateModel, termModel),
+                    future: _dollarReprice(termModel, asOfDateModel),
                     builder: (context, snapshot) {
                       List<Widget> children;
                       if (snapshot.hasData) {
@@ -177,8 +182,9 @@ class ElecSwapCalculatorUi extends StatelessWidget {
     );
   }
 
-  Future<String> _dollarReprice(CalculatorModel calculator,
-      AsOfDateModel asOfDateModel, TermModel termModel) async {
+  Future<String> _dollarReprice(
+      TermModel termModel, AsOfDateModel asOfDateModel) async {
+    var calculator = context.read<CalculatorModel>();
     var value = '?';
     try {
       calculator.asOfDate = asOfDateModel.asOfDate;

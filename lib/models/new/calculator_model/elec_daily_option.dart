@@ -125,7 +125,7 @@ class CalculatorModel extends ChangeNotifier {
           'bucket': '5x16',
           'quantity': {'value': 50},
           'call/put': 'call',
-          'strike': {'value': 100.0},
+          'strike': {'value': 50.0},
         }
       ],
     })

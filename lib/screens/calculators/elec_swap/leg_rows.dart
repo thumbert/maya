@@ -1,9 +1,9 @@
-import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:elec/elec.dart';
 import 'package:elec/src/time/hourly_schedule.dart';
 import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
+import 'package:maya/screens/calculators/elec_swap/edit_quantity.dart';
 import 'package:provider/provider.dart';
 import 'package:maya/models/new/calculator_model/elec_swap.dart';
 
@@ -22,6 +22,8 @@ class _LegRowsState extends State<LegRows> {
   final _serviceError = <String>[];
   final _curveError = <String>[];
   final _fixPriceError = <String>[];
+
+  final _hasCustomQty = <bool>[];
 
   final qtyControllers = <TextEditingController>[];
   final regionControllers = <TextEditingController>[];
@@ -59,6 +61,7 @@ class _LegRowsState extends State<LegRows> {
       _serviceError.add(null);
       _curveError.add(null);
       _fixPriceError.add(null);
+      _hasCustomQty.add(calculator.legs[i].hasCustomQuantity);
       qtyControllers.add(TextEditingController()
         ..text = calculator.legs[i].showQuantity().toString()
         ..addListener(() {}));
@@ -104,66 +107,42 @@ class _LegRowsState extends State<LegRows> {
       Container(
         margin: EdgeInsetsDirectional.only(end: _columnSpace),
         color: Colors.grey[300],
-        child: TextField(
-          controller: qtyControllers[row],
-          onChanged: (value) {
-            var qty = num.tryParse(value);
-            if (qty == null || value == '') {
-              _qtyError[row] = 'Error';
-            } else {
-              _qtyError[row] = null;
-              leg.quantitySchedule = HourlySchedule.filled(qty);
-              model.setLeg(row, leg);
-            }
-          },
-          textAlign: TextAlign.right,
-          scrollPadding: EdgeInsets.all(5),
-          decoration: InputDecoration(
-            errorText: _qtyError[row],
-            isDense: true,
-            contentPadding: EdgeInsets.all(8),
-            errorBorder: _errorBorder,
-            focusedErrorBorder: _errorBorder,
-            border: _outlineInputBorder,
-            enabledBorder: _outlineInputBorder,
-          ),
+        child: Row(
+          children: [
+            if (_hasCustomQty[row])
+              const Icon(Icons.flash_on, color: Colors.orangeAccent),
+            Expanded(
+              child: TextField(
+                controller: qtyControllers[row],
+                onChanged: (value) {
+                  setState(() {
+                    var qty = num.tryParse(value);
+                    if (qty == null || value == '') {
+                      _qtyError[row] = 'Error';
+                    } else {
+                      _qtyError[row] = null;
+                      leg.quantitySchedule = HourlySchedule.filled(qty);
+                      model.setLeg(row, leg);
+                    }
+                  });
+                },
+                textAlign: TextAlign.right,
+                scrollPadding: EdgeInsets.all(5),
+                decoration: InputDecoration(
+                  errorText: _qtyError[row],
+                  isDense: true,
+                  contentPadding: EdgeInsets.all(8),
+                  errorBorder: _errorBorder,
+                  focusedErrorBorder: _errorBorder,
+                  border: _outlineInputBorder,
+                  enabledBorder: _outlineInputBorder,
+                ),
+              ),
+            ),
+          ],
         ),
       ),
-      // Container(
-      //     width: 100.0,
-      //     margin: EdgeInsetsDirectional.only(end: _columnSpace),
-      //     child: TypeAheadField(
-      //       textFieldConfiguration: TextFieldConfiguration(
-      //           controller: _regionController,
-      //           decoration: InputDecoration(
-      //               isDense: true,
-      //               contentPadding: EdgeInsets.all(8),
-      //               border: _outlineInputBorder,
-      //               labelText: '')),
-      //       suggestionsCallback: (pattern) {
-      //         _regionSuggestions = _allRegions
-      //             .where((e) => e.contains(pattern.toLowerCase()))
-      //             .toList();
-      //         if (_regionSuggestions.length == 1) {
-      //           _regionController.text = _regionSuggestions.first;
-      //         }
-      //         return _regionSuggestions;
-      //       },
-      //       itemBuilder: (context, suggestion) {
-      //         return ListTile(title: Text(suggestion));
-      //       },
-      //       transitionBuilder: (context, suggestionsBox, controller) {
-      //         return suggestionsBox;
-      //       },
-      //       onSuggestionSelected: (suggestion) {
-      //         print(suggestion);
-      //         _regionController.text = suggestion;
-      //       },
-      //       noItemsFoundBuilder: (context) =>
-      //           Text(' Invalid region', style: TextStyle(color: Colors.red)),
-      //       // onSaved: (value) => _buckets[0] = value,
-      //     )),
-      // region
+
       /// Region
       Container(
         color: Colors.grey[300],
@@ -290,14 +269,22 @@ class _LegRowsState extends State<LegRows> {
         child: TextField(
             controller: fixedPriceControllers[row],
             onChanged: (value) {
-              var qty = num.tryParse(value);
-              if (qty == null || value == '') {
-                _fixPriceError[row] = 'Error';
-              } else {
-                _fixPriceError[row] = null;
-                leg.fixPriceSchedule = HourlySchedule.filled(qty);
-                model.setLeg(row, leg);
-              }
+              setState(() {
+                if (value == '') {
+                  _fixPriceError[row] = null;
+                  leg.fixPriceSchedule = HourlySchedule.filled(0);
+                  model.setLeg(row, leg);
+                } else {
+                  var fp = num.tryParse(value);
+                  if (fp == null) {
+                    _fixPriceError[row] = 'Error';
+                  } else {
+                    _fixPriceError[row] = null;
+                    leg.fixPriceSchedule = HourlySchedule.filled(fp);
+                    model.setLeg(row, leg);
+                  }
+                }
+              });
             },
             textAlign: TextAlign.right,
             scrollPadding: EdgeInsets.all(5),
@@ -372,7 +359,7 @@ class _LegRowsState extends State<LegRows> {
               } else if (result == 2) {
                 clearRow(row);
               } else if (result == 3) {
-                _onCustomizeQuantity(row);
+                _onCustomizeQuantity(row, model);
               }
             },
             itemBuilder: (context) => [
@@ -417,19 +404,43 @@ class _LegRowsState extends State<LegRows> {
     return leg.price().toStringAsFixed(2);
   }
 
-  void _onCustomizeQuantity(int row) async {
-    var child = CustomizeQuantity(row);
+  void _onCustomizeQuantity(int row, CalculatorModel model) async {
     var value = await showDialog(
       context: context,
-      builder: (context) => child,
+      builder: (context) => CustomizeQuantity(row),
     );
-    print('value: $value');
+
     if (value == 'edit_values') {
-      print('Will edit by hand!');
+      var ts = model.legs[row].quantity();
+      // note: showDialog doesn't keep the context!
       await showDialog(
         context: context,
-        builder: (context) => EditQuantity(row),
+        builder: (context) {
+          return AlertDialog(
+              content: StatefulBuilder(
+                  builder: (context, setState) => EditQuantity(ts)));
+        },
       );
+      bool isCustom = false;
+      for (var i = 1; i < ts.length; i++) {
+        if (ts[i].value != ts[0].value) {
+          isCustom = true;
+          break;
+        }
+      }
+      var leg = model.legs[row];
+      if (isCustom) {
+        // some values are different
+        leg.quantitySchedule = HourlySchedule.fromTimeSeries(ts);
+        _hasCustomQty[row] = true;
+        qtyControllers[row].text = leg.showQuantity().toStringAsFixed(1);
+      } else {
+        // all values are the same
+        _hasCustomQty[row] = false;
+        leg.quantitySchedule = HourlySchedule.filled(ts[0].value);
+        qtyControllers[row].text = leg.showQuantity().toString();
+      }
+      model.setLeg(row, leg);
     } else if (value == 'input_file') {
       print('Will read from file');
     }
@@ -448,6 +459,7 @@ class _LegRowsState extends State<LegRows> {
     _serviceError.insert(row + 1, null);
     _curveError.insert(row + 1, null);
     _fixPriceError.insert(row + 1, null);
+    _hasCustomQty.insert(row + 1, calculator.legs[row].hasCustomQuantity);
     qtyControllers.insert(
         row + 1,
         TextEditingController()
@@ -484,6 +496,7 @@ class _LegRowsState extends State<LegRows> {
       _serviceError.removeAt(row);
       _curveError.removeAt(row);
       _fixPriceError.removeAt(row);
+      _hasCustomQty.removeAt(row);
       qtyControllers.removeAt(row);
       regionControllers.removeAt(row);
       serviceControllers.removeAt(row);

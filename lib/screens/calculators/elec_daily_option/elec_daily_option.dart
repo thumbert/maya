@@ -30,7 +30,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
 
   @override
   void initState() {
-    // super.initState();
+    super.initState();
     // final calculator = context.read<CalculatorModel>();
     // final asOfDateModel = context.watch<AsOfDateModel>();
     // final termModel = context.watch<TermModel>();
@@ -104,7 +104,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
                 decoration:
                     BoxDecoration(color: Theme.of(context).primaryColorLight),
                 child: FutureBuilder<String>(
-                    future: _dollarReprice(),
+                    future: _dollarReprice(termModel, asOfDateModel),
                     builder: (context, snapshot) {
                       List<Widget> children;
                       if (snapshot.hasData) {
@@ -195,11 +195,9 @@ class _EdoState extends State<ElecDailyOptionUi> {
     );
   }
 
-  Future<String> _dollarReprice() async {
+  Future<String> _dollarReprice(
+      TermModel termModel, AsOfDateModel asOfDateModel) async {
     var calculator = context.read<CalculatorModel>();
-    var asOfDateModel = context.read<AsOfDateModel>();
-    var termModel = context.read<TermModel>();
-
     var value = '?';
     try {
       if (calculator.asOfDate != asOfDateModel.asOfDate) {

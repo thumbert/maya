@@ -559,10 +559,10 @@ class _LegRowsState extends State<LegRows> {
     print('value: $value');
     if (value == 'edit_values') {
       print('Will edit by hand!');
-      await showDialog(
-        context: context,
-        builder: (context) => EditQuantity(row),
-      );
+      // await showDialog(
+      //   context: context,
+      //   builder: (context) => EditQuantity(row),
+      // );
     } else if (value == 'input_file') {
       print('Will read from file');
     }
