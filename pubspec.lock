@@ -201,7 +201,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "04bca28078c4b3e0e065f1bb5f709aab19ab58c2"
+      resolved-ref: "6cf11eacd968de99df6d432fa56474cd1b599c4f"
       url: "git://github.com/thumbert/elec.git"
     source: git
     version: "1.0.0"
@@ -210,7 +210,7 @@ packages:
     description:
       path: "."
       ref: HEAD
-      resolved-ref: "991763f2e402235bffad860993e2e8efdb93ad3c"
+      resolved-ref: de2a43d6ace46f7845c0ec06eb5c6cfcbdc7e829
       url: "git://github.com/thumbert/elec-server.git"
     source: git
     version: "1.0.0"

@@ -34,15 +34,20 @@ class MyApp extends StatelessWidget {
 
 RouteFactory _routes() {
   return (settings) {
-    final Map<String, dynamic> arguments = settings.arguments;
-    var route = settings.name + '/${arguments['calculatorId']}';
+    Map<String, dynamic> arguments = settings.arguments;
+    var route = settings.name + '/${arguments['calculatorType']}';
+    route = route.replaceAll('_', '-');
     print(route);
+    if (arguments.keys.length == 1) {
+      // no initial value for the calculator, you're just coming from the calculator list
+      arguments = null;
+    }
     Widget screen;
     switch (route) {
-      case '/calculators/0':
-        screen = ElecSwapMainUi();
+      case '/calculators/elec-swap':
+        screen = ElecSwapMainUi(initialValue: arguments);
         break;
-      case '/calculators/2':
+      case '/calculators/elec-daily-option':
         screen = ElecDailyOptionMainUi();
         break;
       default:

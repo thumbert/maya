@@ -1,5 +1,6 @@
 library homepage.load_existing;
 
+import 'package:elec/calculators/elec_daily_option.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter/material.dart';
@@ -58,6 +59,8 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                 },
                 onSuggestionSelected: (suggestion) {
                   _userIdController.text = suggestion;
+                  // clear the calculator selection
+                  _calculatorNameController.text = '';
                   userId = suggestion;
                 },
                 noItemsFoundBuilder: (context) =>
@@ -114,9 +117,19 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
   }
 
   void _loadCalculator() async {
+    print('in loadCalculator:');
+    print('userId: $userId');
+    print('calculatorName: $calculatorName');
     var aux = await model.getCalculator(userId, calculatorName);
+
+    /// aux fails for 'test 1 2 3'!
     if (aux is ElecSwapCalculator) {
       print(aux.toJson());
+      var json = aux.toJson();
+      Navigator.pushNamed(context, '/calculators', arguments: json);
+    } else if (aux is ElecDailyOption) {
+      print(aux.toJson());
+      Navigator.pushNamed(context, '/calculators', arguments: aux.toJson());
     }
   }
 }

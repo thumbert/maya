@@ -1,6 +1,7 @@
 library screens.calculators.elec_swap;
 
 import 'package:date/date.dart';
+import 'package:elec/calculators/elec_swap.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
@@ -8,6 +9,7 @@ import 'package:maya/models/new/calculator_model/elec_swap.dart';
 import 'package:maya/models/term_model.dart';
 import 'package:maya/screens/calculators/asofdate.dart';
 import 'package:maya/screens/calculators/elec_swap/leg_rows.dart';
+import 'package:maya/screens/calculators/save_calculator.dart';
 import 'package:maya/screens/calculators/term.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
 import 'package:intl/intl.dart';
@@ -15,15 +17,18 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ElecSwapCalculatorUi extends StatefulWidget {
-  ElecSwapCalculatorUi({Key key}) : super(key: key);
+  ElecSwapCalculatorUi(this.initialValue, {Key key}) : super(key: key);
+
+  final Map<String, dynamic> initialValue;
 
   @override
-  State<StatefulWidget> createState() => _EsState();
+  State<StatefulWidget> createState() => _EsState(initialValue);
 }
 
 class _EsState extends State<ElecSwapCalculatorUi> {
-  _EsState();
+  _EsState(this.initialValue);
 
+  Map<String, dynamic> initialValue;
   final _formKey = GlobalKey<FormState>();
   static final NumberFormat _dollarPriceFmt =
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
@@ -33,6 +38,18 @@ class _EsState extends State<ElecSwapCalculatorUi> {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
+
+    if (initialValue != null) {
+      print('need to initialize');
+      var aux = CalculatorModel.fromJson(initialValue);
+      calculator.term = aux.term;
+      calculator.asOfDate = aux.asOfDate;
+      calculator.buySell = aux.buySell;
+      calculator.calculator.legs = aux.legs;
+      asOfDateModel.init(calculator.asOfDate);
+      termModel.init(calculator.term);
+      initialValue = null; // only initialize once
+    }
 
     return Form(
       key: _formKey,
@@ -141,8 +158,6 @@ class _EsState extends State<ElecSwapCalculatorUi> {
                 maxLines: null,
                 decoration: InputDecoration(
                     labelText: 'Comments',
-                    // labelStyle:
-                    //     TextStyle(color: Theme.of(context).primaryColor),
                     border: _outlineInputBorder,
                     enabledBorder: _outlineInputBorder,
                     contentPadding: EdgeInsets.all(8),
@@ -169,7 +184,7 @@ class _EsState extends State<ElecSwapCalculatorUi> {
             const SizedBox(width: 12),
             RaisedButton(
                 child: Text('Save'),
-                onPressed: () {},
+                onPressed: () => _saveCalculator(context, calculator),
                 color: Theme.of(context).buttonColor),
             const SizedBox(width: 12),
             RaisedButton(
@@ -250,6 +265,15 @@ class _EsState extends State<ElecSwapCalculatorUi> {
                 ],
               ));
     }
+  }
+
+  Future<void> _saveCalculator(
+      BuildContext context, CalculatorModel calculator) async {
+    var json = calculator.calculator.toJson();
+    await showDialog(
+      context: context,
+      builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
+    );
   }
 
   final _outlineInputBorder = OutlineInputBorder(

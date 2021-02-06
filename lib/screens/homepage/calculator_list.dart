@@ -43,6 +43,14 @@ class _CalculatorListState extends State<CalculatorList> {
 
   void _onReportTap(BuildContext context, int calculatorId) {
     Navigator.pushNamed(context, '/calculators',
-        arguments: {'calculatorId': calculatorId});
+        arguments: {'calculatorType': calculatorTypes[calculatorId]});
   }
+
+  final Map<int, String> calculatorTypes = {
+    0: 'elec_swap',
+    1: 'elec_monthly_option',
+    2: 'elec_daily_option',
+    3: 'elec_heatrate_swap',
+    4: 'elec_heatrate_option',
+  };
 }
