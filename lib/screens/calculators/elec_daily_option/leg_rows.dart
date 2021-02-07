@@ -2,8 +2,6 @@ import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:elec/elec.dart';
-import 'package:maya/models/asofdate_model.dart';
-import 'package:maya/models/term_model.dart';
 import 'package:maya/screens/calculators/elec_swap/customize_quantity.dart';
 import 'package:provider/provider.dart';
 import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
@@ -164,15 +162,7 @@ class _LegRowsState extends State<LegRows> {
             });
           },
           scrollPadding: EdgeInsets.all(5),
-          decoration: InputDecoration(
-            errorText: _regionError[row],
-            isDense: true,
-            contentPadding: EdgeInsets.all(8),
-            errorBorder: _errorBorder,
-            focusedErrorBorder: _errorBorder,
-            border: _outlineInputBorder,
-            enabledBorder: _outlineInputBorder,
-          ),
+          decoration: _getDecoration(_regionError[row]),
         ),
       ),
 
@@ -205,7 +195,7 @@ class _LegRowsState extends State<LegRows> {
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: EdgeInsets.all(8),
+                    contentPadding: EdgeInsets.all(12),
                     border: _outlineInputBorder,
                     enabledBorder: _outlineInputBorder,
                     labelText: '')),
@@ -240,7 +230,7 @@ class _LegRowsState extends State<LegRows> {
                 controller: callPutControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: EdgeInsets.all(8),
+                    contentPadding: EdgeInsets.all(12),
                     border: _outlineInputBorder,
                     enabledBorder: _outlineInputBorder,
                     labelText: '')),
@@ -268,7 +258,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 55,
-            minHeight: 37,
+            minHeight: 36,
           ),
           child: Container(
             margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -295,7 +285,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 70,
-            minHeight: 37,
+            minHeight: 36,
           ),
           child: Container(
               margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -343,7 +333,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: 55,
-          minHeight: 37,
+          minHeight: 36,
         ),
         child: Container(
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -376,7 +366,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 55,
-            minHeight: 37,
+            minHeight: 36,
           ),
           child: Container(
             margin: EdgeInsetsDirectional.only(end: _columnSpace),
@@ -408,7 +398,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
         constraints: BoxConstraints(
           minWidth: 55,
-          minHeight: 37,
+          minHeight: 36,
         ),
         child: Container(
           color: Colors.grey[300],
@@ -441,7 +431,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 60,
-            minHeight: 37,
+            minHeight: 36,
           ),
           child: Container(
               padding: EdgeInsets.all(5),
@@ -703,7 +693,7 @@ class _LegRowsState extends State<LegRows> {
     return InputDecoration(
         errorText: errorText,
         isDense: true,
-        contentPadding: EdgeInsets.all(8),
+        contentPadding: EdgeInsets.all(12),
         errorBorder: _errorBorder,
         focusedErrorBorder: _errorBorder,
         border: _outlineInputBorder,

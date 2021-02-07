@@ -169,21 +169,25 @@ class _EdoState extends State<ElecDailyOptionUi> {
           children: [
             const SizedBox(width: 20),
             RaisedButton(
+                padding: EdgeInsets.all(16),
                 child: Text('Details'),
                 onPressed: () => _showDetails(context, calculator),
                 color: Theme.of(context).buttonColor),
             const SizedBox(width: 12),
             RaisedButton(
+                padding: EdgeInsets.all(16),
                 child: Text('Reports'),
                 onPressed: () => _showReports(context, calculator),
                 color: Theme.of(context).buttonColor),
             const SizedBox(width: 12),
             RaisedButton(
+                padding: EdgeInsets.all(16),
                 child: Text('Save'),
                 onPressed: () => _saveCalculator(context, calculator),
                 color: Theme.of(context).buttonColor),
             const SizedBox(width: 12),
             RaisedButton(
+                padding: EdgeInsets.all(16),
                 child: Text('Help'),
                 onPressed: () {},
                 color: Theme.of(context).buttonColor),

@@ -1,5 +1,6 @@
 library screens.calculators.elec_swap;
 
+import 'package:confetti/confetti.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
@@ -32,14 +33,26 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
 
   TextEditingController _commentsController;
+  ConfettiController _confettiController;
+  // has the confetti blasted?
+  bool _hasBlasted = false;
 
   @override
   void initState() {
     super.initState();
+    _confettiController =
+        ConfettiController(duration: const Duration(seconds: 7));
     _commentsController = TextEditingController();
     if (initialValue != null && initialValue['comments'] != null) {
       _commentsController.text = initialValue['comments'];
     }
+  }
+
+  @override
+  void dispose() {
+    _commentsController.dispose();
+    _confettiController.dispose();
+    super.dispose();
   }
 
   @override
@@ -61,149 +74,171 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       });
     }
 
-    return Form(
-      key: _formKey,
-      child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
-        SizedBox(height: 20),
+    return Stack(
+      children: [
+        Form(
+          key: _formKey,
+          child: Column(mainAxisAlignment: MainAxisAlignment.start, children: [
+            SizedBox(height: 20),
 
-        /// First row: Term, As of date, Buy/Sell widgets
-        Row(
-          mainAxisAlignment: MainAxisAlignment.start,
-          children: [
-            SizedBox(width: 20),
-            TermUi(),
-            SizedBox(width: 40),
-            AsOfDateUi(),
-            SizedBox(width: 40),
-            AdvancedSwitch(
-              activeChild: Text('Buy'),
-              inactiveChild: Text('Sell'),
-              activeColor: Colors.green,
-              inactiveColor: Colors.red,
-              borderRadius: BorderRadius.circular(20),
-              width: 100,
-              height: 30,
-              value: calculator.buySell == BuySell.buy ? true : false,
-              onChanged: (value) {
-                calculator.buySell = value ? BuySell.buy : BuySell.sell;
-              },
+            /// First row: Term, As of date, Buy/Sell widgets
+            Row(
+              mainAxisAlignment: MainAxisAlignment.start,
+              children: [
+                SizedBox(width: 20),
+                TermUi(),
+                SizedBox(width: 40),
+                AsOfDateUi(),
+                SizedBox(width: 40),
+                AdvancedSwitch(
+                  activeChild: Text('Buy'),
+                  inactiveChild: Text('Sell'),
+                  activeColor: Colors.green,
+                  inactiveColor: Colors.red,
+                  borderRadius: BorderRadius.circular(20),
+                  width: 100,
+                  height: 30,
+                  value: calculator.buySell == BuySell.buy ? true : false,
+                  onChanged: (value) {
+                    calculator.buySell = value ? BuySell.buy : BuySell.sell;
+                  },
+                )
+              ],
+            ),
+
+            /// Leg rows
+            Padding(
+              padding: const EdgeInsets.all(20.0),
+              child: LegRows(),
+            ),
+            const SizedBox(height: 20),
+
+            /// Dollar price
+            Row(children: [
+              const SizedBox(width: 20),
+              Text(
+                'Dollar Price',
+                style: TextStyle(
+                    fontSize: 18, color: Theme.of(context).primaryColor),
+              ),
+              const SizedBox(width: 20),
+              ConstrainedBox(
+                  constraints: BoxConstraints(
+                    minWidth: 100,
+                    minHeight: 37,
+                  ),
+                  child: Container(
+                    padding: EdgeInsets.all(5),
+                    alignment: Alignment.centerRight,
+                    decoration: BoxDecoration(
+                        color: Theme.of(context).primaryColorLight),
+                    child: FutureBuilder<String>(
+                        future: _dollarReprice(termModel, asOfDateModel),
+                        builder: (context, snapshot) {
+                          List<Widget> children;
+                          if (snapshot.hasData) {
+                            children = [
+                              // Icon(Icons.done, color: Colors.green),
+                              // SizedBox(width: 20),
+                              Text(
+                                snapshot.data,
+                                style: TextStyle(fontSize: 16),
+                              )
+                            ];
+                          } else if (snapshot.hasError) {
+                            children = [
+                              Icon(Icons.error_outline, color: Colors.red),
+                              Text(
+                                snapshot.error,
+                                style: TextStyle(fontSize: 16),
+                              )
+                            ];
+                          } else {
+                            children = [
+                              SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ))
+                            ];
+                          }
+                          return Row(children: children);
+                        }),
+                  )),
+            ]),
+            const SizedBox(height: 20),
+
+            /// Comments box
+            Row(
+              children: [
+                Container(
+                  color: Colors.grey[300],
+                  margin: EdgeInsetsDirectional.only(start: 20),
+                  width: 500,
+                  child: TextField(
+                    keyboardType: TextInputType.multiline,
+                    maxLength: null,
+                    maxLines: null,
+                    controller: _commentsController,
+                    decoration: InputDecoration(
+                        labelText: 'Comments',
+                        border: _outlineInputBorder,
+                        enabledBorder: _outlineInputBorder,
+                        contentPadding: EdgeInsets.all(8),
+                        hintText: 'Enter a comment'),
+                  ),
+                )
+              ],
+            ),
+            const SizedBox(height: 40),
+
+            /// Bottom app buttons (Details, Reports, Save, Help)
+            Row(
+              children: [
+                const SizedBox(width: 20),
+                RaisedButton(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Details'),
+                    onPressed: () => _showDetails(context, calculator),
+                    color: Theme.of(context).buttonColor),
+                const SizedBox(width: 12),
+                RaisedButton(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Reports'),
+                    onPressed: () => _showReports(context, calculator),
+                    color: Theme.of(context).buttonColor),
+                const SizedBox(width: 12),
+                RaisedButton(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Save'),
+                    onPressed: () => _saveCalculator(context, calculator),
+                    color: Theme.of(context).buttonColor),
+                const SizedBox(width: 12),
+                RaisedButton(
+                    padding: EdgeInsets.all(16),
+                    child: Text('Help'),
+                    onPressed: () {},
+                    color: Theme.of(context).buttonColor),
+              ],
             )
-          ],
+          ]),
         ),
-
-        /// Leg rows
-        Padding(
-          padding: const EdgeInsets.all(20.0),
-          child: LegRows(),
-        ),
-        const SizedBox(height: 20),
-
-        /// Dollar price
-        Row(children: [
-          const SizedBox(width: 20),
-          Text(
-            'Dollar Price',
-            style:
-                TextStyle(fontSize: 18, color: Theme.of(context).primaryColor),
+        Align(
+          alignment: Alignment.topCenter,
+          child: ConfettiWidget(
+            confettiController: _confettiController,
+            blastDirectionality: BlastDirectionality.explosive,
+            colors: const [
+              Colors.green,
+              Colors.blue,
+              Colors.pink,
+              Colors.orange,
+              Colors.purple
+            ], // manually specify the colors to be used
           ),
-          const SizedBox(width: 20),
-          ConstrainedBox(
-              constraints: BoxConstraints(
-                minWidth: 100,
-                minHeight: 37,
-              ),
-              child: Container(
-                padding: EdgeInsets.all(5),
-                alignment: Alignment.centerRight,
-                decoration:
-                    BoxDecoration(color: Theme.of(context).primaryColorLight),
-                child: FutureBuilder<String>(
-                    future: _dollarReprice(termModel, asOfDateModel),
-                    builder: (context, snapshot) {
-                      List<Widget> children;
-                      if (snapshot.hasData) {
-                        children = [
-                          // Icon(Icons.done, color: Colors.green),
-                          // SizedBox(width: 20),
-                          Text(
-                            snapshot.data,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ];
-                      } else if (snapshot.hasError) {
-                        children = [
-                          Icon(Icons.error_outline, color: Colors.red),
-                          Text(
-                            snapshot.error,
-                            style: TextStyle(fontSize: 16),
-                          )
-                        ];
-                      } else {
-                        children = [
-                          SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                              ))
-                        ];
-                      }
-                      return Row(children: children);
-                    }),
-              )),
-        ]),
-        const SizedBox(height: 20),
-
-        /// Comments box
-        Row(
-          children: [
-            Container(
-              color: Colors.grey[300],
-              margin: EdgeInsetsDirectional.only(start: 20),
-              width: 500,
-              child: TextField(
-                keyboardType: TextInputType.multiline,
-                maxLength: null,
-                maxLines: null,
-                controller: _commentsController,
-                decoration: InputDecoration(
-                    labelText: 'Comments',
-                    border: _outlineInputBorder,
-                    enabledBorder: _outlineInputBorder,
-                    contentPadding: EdgeInsets.all(8),
-                    hintText: 'Enter a comment'),
-              ),
-            )
-          ],
         ),
-        const SizedBox(height: 40),
-
-        /// Bottom app buttons (Details, Reports, Save, Help)
-        Row(
-          children: [
-            const SizedBox(width: 20),
-            RaisedButton(
-                child: Text('Details'),
-                onPressed: () => _showDetails(context, calculator),
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Reports'),
-                onPressed: () => _showReports(context, calculator),
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Save'),
-                onPressed: () => _saveCalculator(context, calculator),
-                color: Theme.of(context).buttonColor),
-            const SizedBox(width: 12),
-            RaisedButton(
-                child: Text('Help'),
-                onPressed: () {},
-                color: Theme.of(context).buttonColor),
-          ],
-        )
-      ]),
+      ],
     );
   }
 
@@ -216,6 +251,10 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       calculator.term = termModel.term;
       await calculator.build();
       var aux = calculator.dollarPrice();
+      if (!_hasBlasted && aux >= 10000000) {
+        _confettiController.play();
+        _hasBlasted = true;
+      }
       value = _dollarPriceFmt.format(aux);
     } catch (e) {
       print(e);

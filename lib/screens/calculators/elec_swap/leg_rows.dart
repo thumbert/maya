@@ -131,7 +131,7 @@ class _LegRowsState extends State<LegRows> {
                 decoration: InputDecoration(
                   errorText: _qtyError[row],
                   isDense: true,
-                  contentPadding: EdgeInsets.all(8),
+                  contentPadding: EdgeInsets.all(12),
                   errorBorder: _errorBorder,
                   focusedErrorBorder: _errorBorder,
                   border: _outlineInputBorder,
@@ -162,7 +162,7 @@ class _LegRowsState extends State<LegRows> {
           decoration: InputDecoration(
             errorText: _regionError[row],
             isDense: true,
-            contentPadding: EdgeInsets.all(8),
+            contentPadding: EdgeInsets.all(12),
             errorBorder: _errorBorder,
             focusedErrorBorder: _errorBorder,
             border: _outlineInputBorder,
@@ -190,7 +190,7 @@ class _LegRowsState extends State<LegRows> {
           decoration: InputDecoration(
             errorText: _serviceError[row],
             isDense: true,
-            contentPadding: EdgeInsets.all(8),
+            contentPadding: EdgeInsets.all(12),
             errorBorder: _errorBorder,
             focusedErrorBorder: _errorBorder,
             border: _outlineInputBorder,
@@ -218,7 +218,7 @@ class _LegRowsState extends State<LegRows> {
           decoration: InputDecoration(
             errorText: _curveError[row],
             isDense: true,
-            contentPadding: EdgeInsets.all(8),
+            contentPadding: EdgeInsets.all(12),
             errorBorder: _errorBorder,
             focusedErrorBorder: _errorBorder,
             border: _outlineInputBorder,
@@ -237,7 +237,7 @@ class _LegRowsState extends State<LegRows> {
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
-                    contentPadding: EdgeInsets.all(8),
+                    contentPadding: EdgeInsets.all(12),
                     border: _outlineInputBorder,
                     enabledBorder: _outlineInputBorder,
                     labelText: '')),
@@ -291,7 +291,7 @@ class _LegRowsState extends State<LegRows> {
             decoration: InputDecoration(
                 errorText: _fixPriceError[row],
                 isDense: true,
-                contentPadding: EdgeInsets.all(8),
+                contentPadding: EdgeInsets.all(12),
                 errorBorder: _errorBorder,
                 focusedErrorBorder: _errorBorder,
                 border: _outlineInputBorder,
@@ -302,7 +302,7 @@ class _LegRowsState extends State<LegRows> {
       ConstrainedBox(
           constraints: BoxConstraints(
             minWidth: 70,
-            minHeight: 37,
+            minHeight: 36,
           ),
           child: Container(
               padding: EdgeInsets.all(5),
