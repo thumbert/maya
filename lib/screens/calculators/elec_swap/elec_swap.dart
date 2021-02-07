@@ -1,7 +1,5 @@
 library screens.calculators.elec_swap;
 
-import 'package:date/date.dart';
-import 'package:elec/calculators/elec_swap.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
@@ -33,6 +31,17 @@ class _EsState extends State<ElecSwapCalculatorUi> {
   static final NumberFormat _dollarPriceFmt =
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
 
+  TextEditingController _commentsController;
+
+  @override
+  void initState() {
+    super.initState();
+    _commentsController = TextEditingController();
+    if (initialValue != null && initialValue['comments'] != null) {
+      _commentsController.text = initialValue['comments'];
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     final calculator = context.watch<CalculatorModel>();
@@ -40,7 +49,6 @@ class _EsState extends State<ElecSwapCalculatorUi> {
     final termModel = context.watch<TermModel>();
 
     if (initialValue != null) {
-      print('need to initialize');
       var aux = CalculatorModel.fromJson(initialValue);
       calculator.term = aux.term;
       calculator.asOfDate = aux.asOfDate;
@@ -48,7 +56,9 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       calculator.calculator.legs = aux.legs;
       asOfDateModel.init(calculator.asOfDate);
       termModel.init(calculator.term);
-      initialValue = null; // only initialize once
+      setState(() {
+        initialValue = null; // only initialize once
+      });
     }
 
     return Form(
@@ -151,11 +161,11 @@ class _EsState extends State<ElecSwapCalculatorUi> {
               color: Colors.grey[300],
               margin: EdgeInsetsDirectional.only(start: 20),
               width: 500,
-              // height: 100,
               child: TextField(
                 keyboardType: TextInputType.multiline,
                 maxLength: null,
                 maxLines: null,
+                controller: _commentsController,
                 decoration: InputDecoration(
                     labelText: 'Comments',
                     border: _outlineInputBorder,
@@ -269,11 +279,15 @@ class _EsState extends State<ElecSwapCalculatorUi> {
 
   Future<void> _saveCalculator(
       BuildContext context, CalculatorModel calculator) async {
-    var json = calculator.calculator.toJson();
-    await showDialog(
-      context: context,
-      builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
-    );
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      calculator.calculator.comments = _commentsController.text;
+      var json = calculator.calculator.toJson();
+      await showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
+      );
+    }
   }
 
   final _outlineInputBorder = OutlineInputBorder(

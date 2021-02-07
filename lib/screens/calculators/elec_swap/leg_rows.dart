@@ -63,12 +63,12 @@ class _LegRowsState extends State<LegRows> {
       _fixPriceError.add(null);
       _hasCustomQty.add(calculator.legs[i].hasCustomQuantity);
       qtyControllers.add(TextEditingController()
-        ..text = calculator.legs[i].showQuantity().toString()
-        ..addListener(() {}));
+        ..text = calculator.legs[i].showQuantity().toString());
       regionControllers.add(TextEditingController()..text = 'isone');
       serviceControllers.add(TextEditingController()..text = 'energy');
       curveControllers.add(TextEditingController()..text = 'hub_da_lmp');
-      bucketControllers.add(TextEditingController()..text = '5x16');
+      bucketControllers.add(TextEditingController()
+        ..text = calculator.legs[i].bucket.toString().toLowerCase());
       fixedPriceControllers.add(TextEditingController()
         ..text = calculator.legs[i].showFixPrice().toString());
     }
@@ -351,7 +351,6 @@ class _LegRowsState extends State<LegRows> {
           alignment: Alignment.centerLeft,
           child: PopupMenuButton<int>(
             onSelected: (result) {
-              print('result: $result');
               if (result == 0) {
                 addRow(row);
               } else if (result == 1) {

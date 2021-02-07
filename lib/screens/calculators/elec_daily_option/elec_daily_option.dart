@@ -1,12 +1,12 @@
 library screens.calculators.elec_daily_option;
 
-import 'package:date/date.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
 import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
 import 'package:maya/models/term_model.dart';
 import 'package:maya/screens/calculators/asofdate.dart';
+import 'package:maya/screens/calculators/save_calculator.dart';
 import 'leg_rows.dart';
 import 'package:maya/screens/calculators/term.dart';
 import 'package:flutter_advanced_switch/flutter_advanced_switch.dart';
@@ -28,24 +28,24 @@ class _EdoState extends State<ElecDailyOptionUi> {
   static final NumberFormat _dollarPriceFmt =
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
 
+  TextEditingController _commentsController;
+
   @override
   void initState() {
     super.initState();
-    // final calculator = context.read<CalculatorModel>();
-    // final asOfDateModel = context.watch<AsOfDateModel>();
-    // final termModel = context.watch<TermModel>();
-    // termModel.init(calculator.term);
-    // asOfDateModel.init(calculator.asOfDate);
+    _commentsController = TextEditingController();
+    // if (initialValue != null && initialValue['comments'] != null) {
+    //   _commentsController.text = initialValue['comments'];
+    // }
   }
-
-  //
-  // void dispose() => super.dispose();
 
   @override
   Widget build(BuildContext context) {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
+
+    // TODO:  set the initial value ...
 
     return Form(
       key: _formKey,
@@ -147,15 +147,13 @@ class _EdoState extends State<ElecDailyOptionUi> {
               color: Colors.grey[300],
               margin: EdgeInsetsDirectional.only(start: 20),
               width: 500,
-              // height: 100,
               child: TextField(
                 keyboardType: TextInputType.multiline,
                 maxLength: null,
                 maxLines: null,
+                controller: _commentsController,
                 decoration: InputDecoration(
                     labelText: 'Comments',
-                    // labelStyle:
-                    //     TextStyle(color: Theme.of(context).primaryColor),
                     border: _outlineInputBorder,
                     enabledBorder: _outlineInputBorder,
                     contentPadding: EdgeInsets.all(8),
@@ -182,7 +180,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
             const SizedBox(width: 12),
             RaisedButton(
                 child: Text('Save'),
-                onPressed: () {},
+                onPressed: () => _saveCalculator(context, calculator),
                 color: Theme.of(context).buttonColor),
             const SizedBox(width: 12),
             RaisedButton(
@@ -200,15 +198,8 @@ class _EdoState extends State<ElecDailyOptionUi> {
     var calculator = context.read<CalculatorModel>();
     var value = '?';
     try {
-      if (calculator.asOfDate != asOfDateModel.asOfDate) {
-        calculator.asOfDate = asOfDateModel.asOfDate;
-      }
-      if (calculator.term != termModel.term) {
-        calculator.term = termModel.term;
-      }
-      // print('fixPrice');
-      // print(calculator.calculator.legs[0].fixPrice);
-      // print(calculator.calculator.legs[0].fixPrice.intervals.first.start);
+      calculator.asOfDate = asOfDateModel.asOfDate;
+      calculator.term = termModel.term;
       await calculator.build();
       var aux = calculator.dollarPrice();
       value = _dollarPriceFmt.format(aux);
@@ -273,6 +264,19 @@ class _EdoState extends State<ElecDailyOptionUi> {
                   )
                 ],
               ));
+    }
+  }
+
+  Future<void> _saveCalculator(
+      BuildContext context, CalculatorModel calculator) async {
+    if (_formKey.currentState.validate()) {
+      _formKey.currentState.save();
+      calculator.calculator.comments = _commentsController.text;
+      var json = calculator.calculator.toJson();
+      await showDialog(
+        context: context,
+        builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
+      );
     }
   }
 
