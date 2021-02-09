@@ -211,6 +211,14 @@ class _LegRowsState extends State<LegRows> {
                 _curveError[row] = 'Error';
               } else {
                 _curveError[row] = null;
+
+                /// TODO: fix it to work with all curves
+                if (value.toLowerCase() == 'ct_da_lmp') {
+                  leg.curveId = 'isone_energy_4004_da_lmp';
+                } else if (value.toLowerCase() == 'hub_da_lmp') {
+                  leg.curveId = 'isone_energy_4000_da_lmp';
+                }
+                model.setLeg(row, leg);
               }
             });
           },
