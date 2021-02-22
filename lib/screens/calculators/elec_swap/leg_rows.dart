@@ -33,7 +33,7 @@ class _LegRowsState extends State<LegRows> {
   final fixedPriceControllers = <TextEditingController>[];
 
   final _allBuckets = Bucket.buckets.keys.map((e) => e.toLowerCase()).toList();
-  final _allRegions = ['isone'];
+  // final _allRegions = ['isone'];
 
   var _bucketSuggestions = <String>[];
 
@@ -241,7 +241,7 @@ class _LegRowsState extends State<LegRows> {
           width: 100.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration(
+            textFieldConfiguration: TextFieldConfiguration<String>(
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -255,13 +255,13 @@ class _LegRowsState extends State<LegRows> {
                   .toList();
               return _bucketSuggestions;
             },
-            itemBuilder: (context, suggestion) {
+            itemBuilder: (context, String suggestion) {
               return ListTile(title: Text(suggestion));
             },
             transitionBuilder: (context, suggestionsBox, controller) {
               return suggestionsBox;
             },
-            onSuggestionSelected: (suggestion) {
+            onSuggestionSelected: (String suggestion) {
               bucketControllers[row].text = suggestion;
               leg.bucket = Bucket.parse(suggestion);
               model.setLeg(row, leg);
@@ -412,7 +412,7 @@ class _LegRowsState extends State<LegRows> {
   }
 
   void _onCustomizeQuantity(int row, CalculatorModel model) async {
-    var value = await showDialog(
+    var value = await showDialog<String>(
       context: context,
       builder: (context) => CustomizeQuantity(row),
     );
@@ -420,7 +420,7 @@ class _LegRowsState extends State<LegRows> {
     if (value == 'edit_values') {
       var ts = model.legs[row].quantity();
       // note: showDialog doesn't keep the context!
-      await showDialog(
+      await showDialog<void>(
         context: context,
         builder: (context) {
           return AlertDialog(
@@ -428,7 +428,7 @@ class _LegRowsState extends State<LegRows> {
                   builder: (context, setState) => EditQuantity(ts)));
         },
       );
-      bool isCustom = false;
+      var isCustom = false;
       for (var i = 1; i < ts.length; i++) {
         if (ts[i].value != ts[0].value) {
           isCustom = true;
@@ -456,10 +456,8 @@ class _LegRowsState extends State<LegRows> {
   /// Add a new row after [row] index.
   void addRow(int row) {
     final calculator = context.read<CalculatorModel>();
-
     var newLeg = calculator.legs[row].copyWith();
     calculator.addLeg(row + 1, newLeg);
-    // print('Adding row: ${row + 1}');
 
     _qtyError.insert(row + 1, null);
     _regionError.insert(row + 1, null);
@@ -560,7 +558,6 @@ class _LegRowsState extends State<LegRows> {
   }
 
   // other details
-  final _backgroundColor = Colors.grey[300];
   final _columnSpace = 12.0;
   final _outlineInputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.zero),

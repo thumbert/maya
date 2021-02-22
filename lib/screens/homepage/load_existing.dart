@@ -37,7 +37,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
             Container(
               width: 200,
               child: TypeAheadFormField(
-                textFieldConfiguration: TextFieldConfiguration(
+                textFieldConfiguration: TextFieldConfiguration<String>(
                     controller: _userIdController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
@@ -51,13 +51,13 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                       .toList();
                   return _userSuggestions;
                 },
-                itemBuilder: (context, suggestion) {
+                itemBuilder: (context, String suggestion) {
                   return ListTile(title: Text(suggestion));
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
-                onSuggestionSelected: (suggestion) {
+                onSuggestionSelected: (String suggestion) {
                   _userIdController.text = suggestion;
                   // clear the calculator selection
                   _calculatorNameController.text = '';
@@ -73,7 +73,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
             Container(
               width: 400,
               child: TypeAheadFormField(
-                textFieldConfiguration: TextFieldConfiguration(
+                textFieldConfiguration: TextFieldConfiguration<String>(
                     controller: _calculatorNameController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
@@ -87,13 +87,13 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
                       .toList();
                   return _calcSuggestions;
                 },
-                itemBuilder: (context, suggestion) {
+                itemBuilder: (context, String suggestion) {
                   return ListTile(title: Text(suggestion));
                 },
                 transitionBuilder: (context, suggestionsBox, controller) {
                   return suggestionsBox;
                 },
-                onSuggestionSelected: (suggestion) {
+                onSuggestionSelected: (String suggestion) {
                   _calculatorNameController.text = suggestion;
                   calculatorName = suggestion;
                 },
@@ -104,32 +104,27 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
             SizedBox(height: 128.0),
 
             /// Load button
-            RaisedButton(
-              child: Text('Load'),
+            ElevatedButton(
+              child: const Text('Load', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 // need to navigator it ...
                 _loadCalculator();
               },
-              color: Theme.of(context).buttonColor,
             )
           ],
         ));
   }
 
   void _loadCalculator() async {
-    print('in loadCalculator:');
-    print('userId: $userId');
-    print('calculatorName: $calculatorName');
     var aux = await model.getCalculator(userId, calculatorName);
-
-    /// aux fails for 'test 1 2 3'!
     if (aux is ElecSwapCalculator) {
       print(aux.toJson());
       var json = aux.toJson();
-      Navigator.pushNamed(context, '/calculators', arguments: json);
+      await Navigator.pushNamed(context, '/calculators', arguments: json);
     } else if (aux is ElecDailyOption) {
       print(aux.toJson());
-      Navigator.pushNamed(context, '/calculators', arguments: aux.toJson());
+      await Navigator.pushNamed(context, '/calculators',
+          arguments: aux.toJson());
     }
   }
 }

@@ -16,18 +16,15 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ElecSwapCalculatorUi extends StatefulWidget {
-  ElecSwapCalculatorUi(this.initialValue, {Key key}) : super(key: key);
-
-  final Map<String, dynamic> initialValue;
+  ElecSwapCalculatorUi({Key key}) : super(key: key);
 
   @override
-  State<StatefulWidget> createState() => _EsState(initialValue);
+  State<StatefulWidget> createState() => _EsState();
 }
 
 class _EsState extends State<ElecSwapCalculatorUi> {
-  _EsState(this.initialValue);
+  _EsState();
 
-  Map<String, dynamic> initialValue;
   final _formKey = GlobalKey<FormState>();
   static final NumberFormat _dollarPriceFmt =
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
@@ -40,12 +37,16 @@ class _EsState extends State<ElecSwapCalculatorUi> {
   @override
   void initState() {
     super.initState();
+    final calculator = context.read<CalculatorModel>();
+    final asOfDateModel = context.read<AsOfDateModel>();
+    final termModel = context.read<TermModel>();
+    asOfDateModel.init(calculator.asOfDate);
+    termModel.init(calculator.term);
+
     _confettiController =
         ConfettiController(duration: const Duration(seconds: 7));
     _commentsController = TextEditingController();
-    if (initialValue != null && initialValue['comments'] != null) {
-      _commentsController.text = initialValue['comments'];
-    }
+    _commentsController.text = calculator.calculator.comments ?? '';
   }
 
   @override
@@ -60,19 +61,6 @@ class _EsState extends State<ElecSwapCalculatorUi> {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
-
-    if (initialValue != null) {
-      var aux = CalculatorModel.fromJson(initialValue);
-      calculator.term = aux.term;
-      calculator.asOfDate = aux.asOfDate;
-      calculator.buySell = aux.buySell;
-      calculator.calculator.legs = aux.legs;
-      asOfDateModel.init(calculator.asOfDate);
-      termModel.init(calculator.term);
-      setState(() {
-        initialValue = null; // only initialize once
-      });
-    }
 
     return Stack(
       children: [
@@ -142,6 +130,7 @@ class _EsState extends State<ElecSwapCalculatorUi> {
                               // SizedBox(width: 20),
                               Text(
                                 snapshot.data,
+                                key: Key('_dollarPriceValue'),
                                 style: TextStyle(fontSize: 16),
                               )
                             ];
@@ -149,7 +138,7 @@ class _EsState extends State<ElecSwapCalculatorUi> {
                             children = [
                               Icon(Icons.error_outline, color: Colors.red),
                               Text(
-                                snapshot.error,
+                                snapshot.error.toString(),
                                 style: TextStyle(fontSize: 16),
                               )
                             ];
@@ -197,29 +186,36 @@ class _EsState extends State<ElecSwapCalculatorUi> {
             Row(
               children: [
                 const SizedBox(width: 20),
-                RaisedButton(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Details'),
-                    onPressed: () => _showDetails(context, calculator),
-                    color: Theme.of(context).buttonColor),
+                ElevatedButton(
+                  child: Text(
+                    'Details',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () => _showDetails(context, calculator),
+                ),
                 const SizedBox(width: 12),
-                RaisedButton(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Reports'),
-                    onPressed: () => _showReports(context, calculator),
-                    color: Theme.of(context).buttonColor),
+                ElevatedButton(
+                  child: Text(
+                    'Reports',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () => _showReports(context, calculator),
+                ),
                 const SizedBox(width: 12),
-                RaisedButton(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Save'),
-                    onPressed: () => _saveCalculator(context, calculator),
-                    color: Theme.of(context).buttonColor),
+                ElevatedButton(
+                    child: Text(
+                      'Save',
+                      style: TextStyle(color: Colors.black),
+                    ),
+                    onPressed: () => _saveCalculator(context, calculator)),
                 const SizedBox(width: 12),
-                RaisedButton(
-                    padding: EdgeInsets.all(16),
-                    child: Text('Help'),
-                    onPressed: () {},
-                    color: Theme.of(context).buttonColor),
+                ElevatedButton(
+                  child: Text(
+                    'Help',
+                    style: TextStyle(color: Colors.black),
+                  ),
+                  onPressed: () {},
+                ),
               ],
             )
           ]),
@@ -264,7 +260,7 @@ class _EsState extends State<ElecSwapCalculatorUi> {
 
   Future<void> _showDetails(BuildContext context, CalculatorModel model) async {
     var out = model.calculator.showDetails();
-    await showDialog(
+    await showDialog<void>(
         context: context,
         builder: (context) => SimpleDialog(
               children: [
@@ -293,14 +289,14 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       ],
     );
 
-    final value = await showDialog(
+    final value = await showDialog<String>(
       context: context,
       builder: (context) => child,
     );
     // The value passed to Navigator.pop() or null.
-    if (value != null && value is String) {
+    if (value != null) {
       var out = calculator.reports[value].toString();
-      await showDialog(
+      await showDialog<void>(
           context: context,
           builder: (context) => SimpleDialog(
                 children: [
@@ -322,7 +318,7 @@ class _EsState extends State<ElecSwapCalculatorUi> {
       _formKey.currentState.save();
       calculator.calculator.comments = _commentsController.text;
       var json = calculator.calculator.toJson();
-      await showDialog(
+      await showDialog<void>(
         context: context,
         builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
       );

@@ -9,9 +9,10 @@ import 'package:provider/provider.dart';
 
 // This widget is needed to collect all the providers needed for this calculator
 class ElecDailyOptionMainUi extends StatelessWidget {
-  ElecDailyOptionMainUi({Key key}) : super(key: key);
+  ElecDailyOptionMainUi({this.initialValue, Key key}) : super(key: key);
 
   final String title = 'Electricity daily option calculator';
+  final Map<String, dynamic> initialValue;
 
   @override
   Widget build(BuildContext context) {
@@ -20,7 +21,7 @@ class ElecDailyOptionMainUi extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => TermModel()),
           ChangeNotifierProvider(create: (context) => AsOfDateModel()),
           ChangeNotifierProvider(
-              create: (context) => CalculatorModel()..init()),
+              create: (context) => CalculatorModel.fromJson(initialValue)),
         ],
         child: Scaffold(
           appBar: AppBar(

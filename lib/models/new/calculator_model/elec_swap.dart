@@ -5,29 +5,25 @@ import 'package:http/http.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:date/date.dart';
 import 'package:elec/calculators/elec_swap.dart';
-import 'package:elec/elec.dart';
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
-import 'package:timezone/timezone.dart';
 import 'package:elec/src/risk_system/pricing/reports/report.dart';
-import 'package:elec/src/time/hourly_schedule.dart';
 
 class CalculatorModel extends ChangeNotifier {
   // CalculatorModel can't extend ElecSwapCalculator.  I've tried and it
   // didn't draw the widgets.  Got a Maximum call stack size exceeded.
   ElecSwapCalculator _calculator;
 
-  CalculatorModel() {
-    init(); // don't need to do it here
-  }
-
-  /// From a mongo document.
+  /// From a mongo document
   CalculatorModel.fromJson(Map<String, dynamic> x) {
+    x ??= initialValue;
     if (x['calculatorType'] == 'elec_swap') {
       _calculator = ElecSwapCalculator.fromJson(x);
     } else {
       throw ArgumentError('Not supported yet!');
     }
+    _calculator.cacheProvider =
+        CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl']);
   }
 
   set asOfDate(Date asOfDate) {
@@ -78,20 +74,20 @@ class CalculatorModel extends ChangeNotifier {
 
   ElecSwapCalculator get calculator => _calculator;
 
-  void init() {
-    _calculator = ElecSwapCalculator()
-      ..cacheProvider =
-          CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl'])
-      ..term = Term.parse('Jul21-Aug21', UTC)
-      ..asOfDate = Date.today()
-      ..buySell = BuySell.buy
-      ..legs = [
-        CommodityLeg(
-            curveId: 'isone_energy_4000_da_lmp',
-            tzLocation: getLocation('America/New_York'),
-            bucket: Bucket.b5x16,
-            timePeriod: TimePeriod.month,
-            quantitySchedule: HourlySchedule.filled(50)),
-      ];
-  }
+  static final initialValue = <String, dynamic>{
+    'calculatorType': 'elec_swap',
+    'term': 'Jul21-Aug21',
+    'buy/sell': 'Buy',
+    'comments': '',
+    'legs': [
+      {
+        'curveId': 'isone_energy_4000_da_lmp',
+        'tzLocation': 'America/New_York',
+        'bucket': '5x16',
+        'quantity': {
+          'value': 50,
+        },
+      }
+    ],
+  };
 }

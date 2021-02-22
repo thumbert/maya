@@ -3,11 +3,7 @@ library screens.calculators.elec_swap.edit_quantity;
 import 'package:date/date.dart';
 import 'package:editable/editable.dart';
 import 'package:flutter/material.dart';
-import 'package:maya/models/edit_quantity.dart';
-import 'package:maya/models/new/calculator_model/elec_swap.dart';
 import 'package:timeseries/timeseries.dart';
-import 'package:elec/src/time/hourly_schedule.dart';
-import 'package:provider/provider.dart';
 
 class EditQuantity extends StatefulWidget {
   EditQuantity(this.ts);
@@ -66,15 +62,14 @@ class _EditQuantityState extends State<EditQuantity> {
         Row(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            RaisedButton(
-                child: Text('Save'),
+            ElevatedButton(
+                child:
+                    const Text('Save', style: TextStyle(color: Colors.black)),
                 onPressed: () async {
                   var editedRows = _editableKey.currentState.editedRows;
-                  print(editedRows);
                   await _updateQuantity(editedRows, ts);
                   Navigator.pop(context);
-                },
-                color: Theme.of(context).buttonColor),
+                }),
           ],
         ),
       ],
@@ -84,8 +79,8 @@ class _EditQuantityState extends State<EditQuantity> {
   Future<void> _updateQuantity(List editedRows, TimeSeries<num> ts) async {
     setState(() {
       for (var er in editedRows) {
-        int i = er['row'];
-        var mw = num.tryParse(er['mw']) ?? 0;
+        var i = er['row'] as int;
+        var mw = num.tryParse(er['mw'] as String) ?? 0;
         ts[i] = IntervalTuple<num>(ts[i].interval, mw);
       }
     });

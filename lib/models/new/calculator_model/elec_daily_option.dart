@@ -14,17 +14,16 @@ class CalculatorModel extends ChangeNotifier {
   // didn't draw the widgets.  Got a Maximum call stack size exceeded.
   ElecDailyOption _calculator;
 
-  CalculatorModel() {
-    init(); // don't need to do it here
-  }
-
   /// From a mongo document.
   CalculatorModel.fromJson(Map<String, dynamic> x) {
+    x ??= initialValue;
     if (x['calculatorType'] == 'elec_daily_option') {
       _calculator = ElecDailyOption.fromJson(x);
     } else {
       throw ArgumentError('Not supported yet!');
     }
+    _calculator.cacheProvider =
+        CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl']);
   }
 
   set asOfDate(Date asOfDate) => _calculator.asOfDate = asOfDate;
@@ -111,25 +110,20 @@ class CalculatorModel extends ChangeNotifier {
 
   ElecDailyOption get calculator => _calculator;
 
-  void init() {
-    _calculator = ElecDailyOption.fromJson({
-      'calculatorType': 'elec_daily_option',
-      'term': 'Jan21-Feb21',
-      'asOfDate': '2020-07-06',
-      'buy/sell': 'Buy',
-      'comments': 'a daily options calculator',
-      'legs': [
-        {
-          'curveId': 'isone_energy_4000_da_lmp',
-          'tzLocation': 'America/New_York', // ideally this should not be here
-          'bucket': '5x16',
-          'quantity': {'value': 50},
-          'call/put': 'call',
-          'strike': {'value': 50.0},
-        }
-      ],
-    })
-      ..cacheProvider = CacheProvider.test(
-          client: Client(), rootUrl: DotEnv().env['rootUrl']);
-  }
+  static final initialValue = <String, dynamic>{
+    'calculatorType': 'elec_daily_option',
+    'term': 'Jul21-Aug21',
+    'buy/sell': 'Buy',
+    'comments': '',
+    'legs': [
+      {
+        'curveId': 'isone_energy_4000_da_lmp',
+        'tzLocation': 'America/New_York', // ideally this should not be here
+        'bucket': '5x16',
+        'quantity': {'value': 50},
+        'call/put': 'call',
+        'strike': {'value': 50.0},
+      }
+    ],
+  };
 }

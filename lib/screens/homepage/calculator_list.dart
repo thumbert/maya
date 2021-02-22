@@ -34,6 +34,7 @@ class _CalculatorListState extends State<CalculatorList> {
                   });
                 },
                 child: ListTile(
+                  key: Key(calculatorTypes[index]),
                   onTap: () => _onReportTap(context, index),
                   onLongPress: () => _onReportTap(context, index),
                   selected: calculators[index].selected,

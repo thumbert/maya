@@ -10,3 +10,15 @@ Start a python server ```python -m http.server 9000```
 or ```python -m SimpleHTTPServer 9000```
 
 Navigate to ```http://localhost:9000/build/web/#```
+
+
+## For integration testing
+
+Need to install ChromeDriver first (version 89, needs to match your Chrome) 
+and start it ```./chromedriver --port=4444```
+
+Then in the root of your project do
+```
+flutter drive --driver=test_driver/integration_test.dart --target=test_driver/elec_daily_option_test.dart
+```
+(not working yet, boo)

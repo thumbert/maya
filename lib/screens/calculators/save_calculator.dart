@@ -1,7 +1,6 @@
 library screens.calculators.save_calculator;
 
 import 'package:flutter_dotenv/flutter_dotenv.dart';
-import 'package:elec/calculators/elec_swap.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:maya/models/existing/load_existing.dart';
@@ -30,7 +29,7 @@ class _SaveCalculatorState extends State<SaveCalculator> {
     var _calcSuggestions = <String>[];
 
     return Form(
-      key: this._formKey,
+      key: _formKey,
       child: Container(
           padding: EdgeInsets.all(20),
           child: Column(
@@ -42,7 +41,7 @@ class _SaveCalculatorState extends State<SaveCalculator> {
               Container(
                 width: 200,
                 child: TypeAheadFormField(
-                  textFieldConfiguration: TextFieldConfiguration(
+                  textFieldConfiguration: TextFieldConfiguration<String>(
                       controller: _userIdController,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(8),
@@ -56,13 +55,13 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                         .toList();
                     return _userSuggestions;
                   },
-                  itemBuilder: (context, suggestion) {
+                  itemBuilder: (context, String suggestion) {
                     return ListTile(title: Text(suggestion));
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
-                  onSuggestionSelected: (suggestion) {
+                  onSuggestionSelected: (String suggestion) {
                     _userIdController.text = suggestion;
                     // no need to change the calculator name
                     userId = suggestion;
@@ -80,7 +79,7 @@ class _SaveCalculatorState extends State<SaveCalculator> {
               Container(
                 width: 400,
                 child: TypeAheadFormField(
-                  textFieldConfiguration: TextFieldConfiguration(
+                  textFieldConfiguration: TextFieldConfiguration<String>(
                       controller: _calculatorNameController,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(8),
@@ -95,13 +94,13 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                         .toList();
                     return _calcSuggestions;
                   },
-                  itemBuilder: (context, suggestion) {
+                  itemBuilder: (context, String suggestion) {
                     return ListTile(title: Text(suggestion));
                   },
                   transitionBuilder: (context, suggestionsBox, controller) {
                     return suggestionsBox;
                   },
-                  onSuggestionSelected: (suggestion) {
+                  onSuggestionSelected: (String suggestion) {
                     _calculatorNameController.text = suggestion;
                     calculatorName = suggestion;
                   },
@@ -117,8 +116,9 @@ class _SaveCalculatorState extends State<SaveCalculator> {
               SizedBox(height: 128.0),
 
               /// Save button
-              RaisedButton(
-                child: Text('Save'),
+              ElevatedButton(
+                child:
+                    const Text('Save', style: TextStyle(color: Colors.black)),
                 onPressed: () async {
                   if (_formKey.currentState.validate()) {
                     _formKey.currentState.save();
@@ -128,10 +128,9 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                       ...json,
                     };
                     await model.saveCalculator(out);
-                    Navigator.of(context).pop();
+                    Navigator.pop(context);
                   }
                 },
-                color: Theme.of(context).buttonColor,
               )
             ],
           )),

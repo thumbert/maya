@@ -20,7 +20,7 @@ class ElecSwapMainUi extends StatelessWidget {
           ChangeNotifierProvider(create: (context) => TermModel()),
           ChangeNotifierProvider(create: (context) => AsOfDateModel()),
           ChangeNotifierProvider(
-              create: (context) => CalculatorModel()..init()),
+              create: (context) => CalculatorModel.fromJson(initialValue)),
         ],
         child: Scaffold(
           appBar: AppBar(
@@ -30,7 +30,7 @@ class ElecSwapMainUi extends StatelessWidget {
             child: Column(
               mainAxisAlignment: MainAxisAlignment.start,
               children: [
-                ElecSwapCalculatorUi(initialValue),
+                ElecSwapCalculatorUi(),
               ],
             ),
           ),

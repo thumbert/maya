@@ -21,20 +21,23 @@ class MyApp extends StatelessWidget {
       initialRoute: HomePage.route,
       home: HomePage(),
       onUnknownRoute: (settings) {
-        return MaterialPageRoute(builder: (_) => Error404());
+        return MaterialPageRoute<void>(builder: (_) => Error404());
       },
       theme: ThemeData(
-        primarySwatch: Colors.indigo,
-        buttonColor: Colors.orange[200],
-        visualDensity: VisualDensity.adaptivePlatformDensity,
-      ),
+          primarySwatch: Colors.indigo,
+          buttonColor: Colors.orange[200],
+          visualDensity: VisualDensity.adaptivePlatformDensity,
+          elevatedButtonTheme: ElevatedButtonThemeData(
+            style: ElevatedButton.styleFrom(
+                minimumSize: Size(100, 40), primary: Colors.orange[200]),
+          )),
     );
   }
 }
 
 RouteFactory _routes() {
   return (settings) {
-    Map<String, dynamic> arguments = settings.arguments;
+    var arguments = settings.arguments as Map<String, dynamic>;
     var route = settings.name + '/${arguments['calculatorType']}';
     route = route.replaceAll('_', '-');
     print(route);
@@ -54,6 +57,6 @@ RouteFactory _routes() {
         screen = Error404();
         break;
     }
-    return MaterialPageRoute(builder: (context) => screen);
+    return MaterialPageRoute<void>(builder: (context) => screen);
   };
 }

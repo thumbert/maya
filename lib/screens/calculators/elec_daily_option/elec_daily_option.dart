@@ -33,10 +33,14 @@ class _EdoState extends State<ElecDailyOptionUi> {
   @override
   void initState() {
     super.initState();
+    final calculator = context.read<CalculatorModel>();
+    final asOfDateModel = context.read<AsOfDateModel>();
+    final termModel = context.read<TermModel>();
+    asOfDateModel.init(calculator.asOfDate);
+    termModel.init(calculator.term);
+
     _commentsController = TextEditingController();
-    // if (initialValue != null && initialValue['comments'] != null) {
-    //   _commentsController.text = initialValue['comments'];
-    // }
+    _commentsController.text = calculator.calculator.comments ?? '';
   }
 
   @override
@@ -44,8 +48,6 @@ class _EdoState extends State<ElecDailyOptionUi> {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
-
-    // TODO:  set the initial value ...
 
     return Form(
       key: _formKey,
@@ -114,13 +116,14 @@ class _EdoState extends State<ElecDailyOptionUi> {
                           Text(
                             snapshot.data,
                             style: TextStyle(fontSize: 16),
+                            key: Key('_edo_dollarPrice'),
                           )
                         ];
                       } else if (snapshot.hasError) {
                         children = [
                           Icon(Icons.error_outline, color: Colors.red),
                           Text(
-                            snapshot.error,
+                            snapshot.error.toString(),
                             style: TextStyle(fontSize: 16),
                           )
                         ];
@@ -168,29 +171,25 @@ class _EdoState extends State<ElecDailyOptionUi> {
         Row(
           children: [
             const SizedBox(width: 20),
-            RaisedButton(
-                padding: EdgeInsets.all(16),
-                child: Text('Details'),
-                onPressed: () => _showDetails(context, calculator),
-                color: Theme.of(context).buttonColor),
+            ElevatedButton(
+              child: Text('Details', style: TextStyle(color: Colors.black)),
+              onPressed: () => _showDetails(context, calculator),
+            ),
             const SizedBox(width: 12),
-            RaisedButton(
-                padding: EdgeInsets.all(16),
-                child: Text('Reports'),
-                onPressed: () => _showReports(context, calculator),
-                color: Theme.of(context).buttonColor),
+            ElevatedButton(
+              child: Text('Reports', style: TextStyle(color: Colors.black)),
+              onPressed: () => _showReports(context, calculator),
+            ),
             const SizedBox(width: 12),
-            RaisedButton(
-                padding: EdgeInsets.all(16),
-                child: Text('Save'),
-                onPressed: () => _saveCalculator(context, calculator),
-                color: Theme.of(context).buttonColor),
+            ElevatedButton(
+              child: Text('Save', style: TextStyle(color: Colors.black)),
+              onPressed: () => _saveCalculator(context, calculator),
+            ),
             const SizedBox(width: 12),
-            RaisedButton(
-                padding: EdgeInsets.all(16),
-                child: Text('Help'),
-                onPressed: () {},
-                color: Theme.of(context).buttonColor),
+            ElevatedButton(
+              child: Text('Help', style: TextStyle(color: Colors.black)),
+              onPressed: () {},
+            ),
           ],
         )
       ]),
@@ -215,7 +214,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
 
   Future<void> _showDetails(BuildContext context, CalculatorModel model) async {
     var out = model.calculator.showDetails();
-    await showDialog(
+    await showDialog<Widget>(
         context: context,
         builder: (context) => SimpleDialog(
               children: [
@@ -248,14 +247,14 @@ class _EdoState extends State<ElecDailyOptionUi> {
       ],
     );
 
-    final value = await showDialog(
+    final value = await showDialog<String>(
       context: context,
       builder: (context) => child,
     );
     // The value passed to Navigator.pop() or null.
-    if (value != null && value is String) {
+    if (value != null) {
       var out = calculator.reports[value].toString();
-      await showDialog(
+      await showDialog<Widget>(
           context: context,
           builder: (context) => SimpleDialog(
                 children: [
@@ -277,7 +276,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
       _formKey.currentState.save();
       calculator.calculator.comments = _commentsController.text;
       var json = calculator.calculator.toJson();
-      await showDialog(
+      await showDialog<void>(
         context: context,
         builder: (context) => SimpleDialog(children: [SaveCalculator(json)]),
       );

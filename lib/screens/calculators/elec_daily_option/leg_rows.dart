@@ -191,7 +191,7 @@ class _LegRowsState extends State<LegRows> {
           width: 100.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration(
+            textFieldConfiguration: TextFieldConfiguration<Widget>(
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -205,13 +205,13 @@ class _LegRowsState extends State<LegRows> {
                   .toList();
               return _bucketSuggestions;
             },
-            itemBuilder: (context, suggestion) {
+            itemBuilder: (context, String suggestion) {
               return ListTile(title: Text(suggestion));
             },
             transitionBuilder: (context, suggestionsBox, controller) {
               return suggestionsBox;
             },
-            onSuggestionSelected: (suggestion) {
+            onSuggestionSelected: (String suggestion) {
               bucketControllers[row].text = suggestion;
               leg.bucket = Bucket.parse(suggestion);
               model.setLeg(row, leg);
@@ -226,7 +226,7 @@ class _LegRowsState extends State<LegRows> {
           width: 70.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration(
+            textFieldConfiguration: TextFieldConfiguration<Widget>(
                 controller: callPutControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -239,13 +239,13 @@ class _LegRowsState extends State<LegRows> {
                   .where((e) => e.contains(pattern.toLowerCase()))
                   .toList();
             },
-            itemBuilder: (context, suggestion) {
+            itemBuilder: (context, String suggestion) {
               return ListTile(title: Text(suggestion));
             },
             transitionBuilder: (context, suggestionsBox, controller) {
               return suggestionsBox;
             },
-            onSuggestionSelected: (suggestion) {
+            onSuggestionSelected: (String suggestion) {
               callPutControllers[row].text = suggestion;
               leg.callPut = CallPut.parse(suggestion);
               model.setLeg(row, leg);
@@ -542,11 +542,10 @@ class _LegRowsState extends State<LegRows> {
 
   void _onCustomizeQuantity(int row) async {
     var child = CustomizeQuantity(row);
-    var value = await showDialog(
+    var value = await showDialog<String>(
       context: context,
       builder: (context) => child,
     );
-    print('value: $value');
     if (value == 'edit_values') {
       print('Will edit by hand!');
       // await showDialog(
