@@ -19,6 +19,6 @@ and start it ```./chromedriver --port=4444```
 
 Then in the root of your project do
 ```
-flutter drive --driver=test_driver/integration_test.dart --target=test_driver/elec_daily_option_test.dart
+flutter drive --driver=test_driver/app.dart --browser-name=chrome --release
 ```
 (not working yet, boo)

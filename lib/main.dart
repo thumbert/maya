@@ -41,6 +41,7 @@ RouteFactory _routes() {
     var route = settings.name + '/${arguments['calculatorType']}';
     route = route.replaceAll('_', '-');
     print(route);
+    // TODO: need to document this logic better
     if (arguments.keys.length == 1) {
       // no initial value for the calculator, you're just coming from the calculator list
       arguments = null;

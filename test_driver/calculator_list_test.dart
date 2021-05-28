@@ -4,8 +4,8 @@ import 'package:flutter_driver/flutter_driver.dart';
 import 'package:test/test.dart';
 
 void main() {
-  group('Elec daily option tests', () {
-    final dollarPrice = find.byValueKey('_edo_dollarPrice');
+  group('Calculator list tests', () {
+    final es = find.byValueKey('elec_swap');
 
     FlutterDriver driver;
 
@@ -20,7 +20,8 @@ void main() {
     });
 
     test('get dollar price', () async {
-      var value0 = await driver.getText(dollarPrice);
+      await driver.waitFor(es);
+      var value0 = es.toString();
 
       print('hi');
       expect(value0, '1223');
