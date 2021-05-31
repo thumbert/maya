@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:maya/models/new/calculator_list.dart';
 
 class CalculatorList extends StatefulWidget {
-  CalculatorList({Key key}) : super(key: key);
+  CalculatorList({Key? key}) : super(key: key);
   @override
   _CalculatorListState createState() => _CalculatorListState();
 }
@@ -12,7 +12,7 @@ class CalculatorList extends StatefulWidget {
 class _CalculatorListState extends State<CalculatorList> {
   _CalculatorListState();
 
-  int _hoveringIndex;
+  int? _hoveringIndex;
 
   @override
   Widget build(BuildContext context) {
@@ -34,7 +34,7 @@ class _CalculatorListState extends State<CalculatorList> {
                   });
                 },
                 child: ListTile(
-                  key: Key(calculatorTypes[index]),
+                  key: Key(calculatorTypes[index]!),
                   onTap: () => _onReportTap(context, index),
                   onLongPress: () => _onReportTap(context, index),
                   selected: calculators[index].selected,

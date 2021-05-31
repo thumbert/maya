@@ -8,7 +8,7 @@ import 'package:provider/provider.dart';
 import 'package:maya/models/new/calculator_model/elec_swap.dart';
 
 class LegRows extends StatefulWidget {
-  LegRows({Key key}) : super(key: key);
+  LegRows({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LegRowsState();
@@ -17,11 +17,11 @@ class LegRows extends StatefulWidget {
 class _LegRowsState extends State<LegRows> {
   _LegRowsState();
 
-  final _qtyError = <String>[];
-  final _regionError = <String>[];
-  final _serviceError = <String>[];
-  final _curveError = <String>[];
-  final _fixPriceError = <String>[];
+  final _qtyError = <String?>[];
+  final _regionError = <String?>[];
+  final _serviceError = <String?>[];
+  final _curveError = <String?>[];
+  final _fixPriceError = <String?>[];
 
   final _hasCustomQty = <bool>[];
 
@@ -241,7 +241,7 @@ class _LegRowsState extends State<LegRows> {
           width: 100.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration<String>(
+            textFieldConfiguration: TextFieldConfiguration(
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -324,7 +324,7 @@ class _LegRowsState extends State<LegRows> {
                   if (snapshot.hasData) {
                     children = [
                       Text(
-                        snapshot.data,
+                        snapshot.data!,
                         style: TextStyle(fontSize: 16),
                       )
                     ];
@@ -347,8 +347,8 @@ class _LegRowsState extends State<LegRows> {
                     ];
                   }
                   return Row(
-                    children: children,
                     mainAxisAlignment: MainAxisAlignment.end,
+                    children: children,
                   );
                 },
               ))),
@@ -561,7 +561,7 @@ class _LegRowsState extends State<LegRows> {
   final _columnSpace = 12.0;
   final _outlineInputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.zero),
-    borderSide: BorderSide(color: Colors.grey[300], width: 1),
+    borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
   );
   final _errorBorder = OutlineInputBorder(
     borderSide: BorderSide(color: Colors.red, width: 2),

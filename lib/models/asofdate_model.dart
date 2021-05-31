@@ -2,11 +2,12 @@ library models.asofdate_model;
 
 import 'package:date/date.dart';
 import 'package:flutter/material.dart';
+import 'package:timezone/timezone.dart';
 
 class AsOfDateModel extends ChangeNotifier {
   AsOfDateModel();
 
-  Date _asOfDate;
+  Date _asOfDate = Date.today(location: UTC);
 
   void init(Date date) => _asOfDate = date;
 
@@ -15,5 +16,5 @@ class AsOfDateModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Date get asOfDate => _asOfDate ?? Date.today();
+  Date get asOfDate => _asOfDate;
 }

@@ -15,13 +15,13 @@ class SaveCalculator extends StatefulWidget {
 class _SaveCalculatorState extends State<SaveCalculator> {
   _SaveCalculatorState(this.json);
   final Map<String, dynamic> json;
-  final LoadExisting model = LoadExisting(rootUrl: DotEnv().env['rootUrl2']);
+  final LoadExisting model = LoadExisting(rootUrl: dotenv.env['rootUrl']!);
   final GlobalKey<FormState> _formKey = GlobalKey<FormState>();
   final _userIdController = TextEditingController();
   final _calculatorNameController = TextEditingController();
 
-  String userId;
-  String calculatorName;
+  late String userId;
+  late String calculatorName;
 
   @override
   Widget build(BuildContext context) {
@@ -41,7 +41,7 @@ class _SaveCalculatorState extends State<SaveCalculator> {
               Container(
                 width: 200,
                 child: TypeAheadFormField(
-                  textFieldConfiguration: TextFieldConfiguration<String>(
+                  textFieldConfiguration: TextFieldConfiguration(
                       controller: _userIdController,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(8),
@@ -66,9 +66,9 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                     // no need to change the calculator name
                     userId = suggestion;
                   },
-                  onSaved: (value) => userId = value,
+                  onSaved: (value) => userId = value!,
                   validator: (value) =>
-                      value.isEmpty ? 'Please select a user' : null,
+                      value!.isEmpty ? 'Please select a user' : null,
                   noItemsFoundBuilder: (context) => Text(' Unknown user',
                       style: TextStyle(color: Colors.red)),
                 ),
@@ -79,7 +79,7 @@ class _SaveCalculatorState extends State<SaveCalculator> {
               Container(
                 width: 400,
                 child: TypeAheadFormField(
-                  textFieldConfiguration: TextFieldConfiguration<String>(
+                  textFieldConfiguration: TextFieldConfiguration(
                       controller: _calculatorNameController,
                       decoration: InputDecoration(
                           contentPadding: EdgeInsets.all(8),
@@ -104,8 +104,8 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                     _calculatorNameController.text = suggestion;
                     calculatorName = suggestion;
                   },
-                  onSaved: (value) => calculatorName = value,
-                  validator: (value) => value.isEmpty
+                  onSaved: (value) => calculatorName = value!,
+                  validator: (value) => value!.isEmpty
                       ? 'Please type in a name for the calculator'
                       : null,
                   // TODO: show something if you overwrite an existing calculator
@@ -117,11 +117,9 @@ class _SaveCalculatorState extends State<SaveCalculator> {
 
               /// Save button
               ElevatedButton(
-                child:
-                    const Text('Save', style: TextStyle(color: Colors.black)),
                 onPressed: () async {
-                  if (_formKey.currentState.validate()) {
-                    _formKey.currentState.save();
+                  if (_formKey.currentState!.validate()) {
+                    _formKey.currentState!.save();
                     var out = <String, dynamic>{
                       'userId': userId,
                       'calculatorName': calculatorName,
@@ -131,6 +129,8 @@ class _SaveCalculatorState extends State<SaveCalculator> {
                     Navigator.pop(context);
                   }
                 },
+                child:
+                    const Text('Save', style: TextStyle(color: Colors.black)),
               )
             ],
           )),

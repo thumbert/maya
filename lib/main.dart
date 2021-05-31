@@ -8,7 +8,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 void main() async {
   initializeTimeZones();
-  await DotEnv().load('.env');
+  await dotenv.load(fileName: '.env');
   runApp(MyApp());
 }
 
@@ -36,14 +36,14 @@ class MyApp extends StatelessWidget {
 }
 
 RouteFactory _routes() {
-  return (settings) {
+  return (RouteSettings settings) {
     var arguments = settings.arguments as Map<String, dynamic>;
-    var route = settings.name + '/${arguments['calculatorType']}';
+    var route = settings.name! + '/${arguments['calculatorType']}';
     route = route.replaceAll('_', '-');
     print(route);
     if (arguments.keys.length == 1) {
       // no initial value for the calculator, you're just coming from the calculator list
-      arguments = null;
+      arguments = <String, dynamic>{};
     }
     Widget screen;
     switch (route) {
@@ -51,7 +51,7 @@ RouteFactory _routes() {
         screen = ElecSwapMainUi(initialValue: arguments);
         break;
       case '/calculators/elec-daily-option':
-        screen = ElecDailyOptionMainUi();
+        screen = ElecDailyOptionMainUi(initialValue: arguments);
         break;
       default:
         screen = Error404();

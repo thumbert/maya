@@ -7,7 +7,7 @@ import 'package:provider/provider.dart';
 import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
 
 class LegRows extends StatefulWidget {
-  LegRows({Key key}) : super(key: key);
+  LegRows({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _LegRowsState();
@@ -16,13 +16,13 @@ class LegRows extends StatefulWidget {
 class _LegRowsState extends State<LegRows> {
   _LegRowsState();
 
-  final _qtyError = <String>[];
-  final _regionError = <String>[];
-  final _curveError = <String>[];
-  final _strikeError = <String>[];
-  final _priceAdjustError = <String>[];
-  final _volAdjustError = <String>[];
-  final _fixPriceError = <String>[];
+  final _qtyError = <String?>[];
+  final _regionError = <String?>[];
+  final _curveError = <String?>[];
+  final _strikeError = <String?>[];
+  final _priceAdjustError = <String?>[];
+  final _volAdjustError = <String?>[];
+  final _fixPriceError = <String?>[];
 
   final qtyControllers = <TextEditingController>[];
   final regionControllers = <TextEditingController>[];
@@ -191,7 +191,7 @@ class _LegRowsState extends State<LegRows> {
           width: 100.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration<Widget>(
+            textFieldConfiguration: TextFieldConfiguration(
                 controller: bucketControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -226,7 +226,7 @@ class _LegRowsState extends State<LegRows> {
           width: 70.0,
           margin: EdgeInsetsDirectional.only(end: _columnSpace),
           child: TypeAheadField(
-            textFieldConfiguration: TextFieldConfiguration<Widget>(
+            textFieldConfiguration: TextFieldConfiguration(
                 controller: callPutControllers[row],
                 decoration: InputDecoration(
                     isDense: true,
@@ -300,7 +300,7 @@ class _LegRowsState extends State<LegRows> {
                   if (snapshot.hasData) {
                     children = [
                       Text(
-                        snapshot.data,
+                        snapshot.data!,
                         style: TextStyle(fontSize: 16),
                       )
                     ];
@@ -323,8 +323,8 @@ class _LegRowsState extends State<LegRows> {
                     ];
                   }
                   return Row(
-                    children: children,
                     mainAxisAlignment: MainAxisAlignment.end,
+                    children: children,
                   );
                 },
               ))),
@@ -445,7 +445,7 @@ class _LegRowsState extends State<LegRows> {
                   if (snapshot.hasData) {
                     children = [
                       Text(
-                        snapshot.data,
+                        snapshot.data!,
                         style: TextStyle(fontSize: 16),
                       )
                     ];
@@ -468,8 +468,8 @@ class _LegRowsState extends State<LegRows> {
                     ];
                   }
                   return Row(
-                    children: children,
                     mainAxisAlignment: MainAxisAlignment.end,
+                    children: children,
                   );
                 },
               ))),
@@ -680,7 +680,7 @@ class _LegRowsState extends State<LegRows> {
   final _columnSpace = 12.0;
   final _outlineInputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.zero),
-    borderSide: BorderSide(color: Colors.grey[300], width: 1),
+    borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
   );
   final _errorBorder = OutlineInputBorder(
     borderSide: BorderSide(color: Colors.red, width: 2),
@@ -688,7 +688,7 @@ class _LegRowsState extends State<LegRows> {
   final _rowSpacer =
       TableRow(children: List.generate(12, (index) => SizedBox(height: 4)));
 
-  InputDecoration _getDecoration(String errorText) {
+  InputDecoration _getDecoration(String? errorText) {
     return InputDecoration(
         errorText: errorText,
         isDense: true,

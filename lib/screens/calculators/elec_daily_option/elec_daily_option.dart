@@ -3,9 +3,11 @@ library screens.calculators.elec_daily_option;
 import 'package:elec/risk_system.dart';
 import 'package:flutter/material.dart';
 import 'package:maya/models/asofdate_model.dart';
+import 'package:maya/models/buysell_model.dart';
 import 'package:maya/models/new/calculator_model/elec_daily_option.dart';
 import 'package:maya/models/term_model.dart';
 import 'package:maya/screens/calculators/asofdate.dart';
+import 'package:maya/screens/calculators/buysell.dart';
 import 'package:maya/screens/calculators/save_calculator.dart';
 import 'leg_rows.dart';
 import 'package:maya/screens/calculators/term.dart';
@@ -15,7 +17,7 @@ import 'package:provider/provider.dart';
 import 'package:google_fonts/google_fonts.dart';
 
 class ElecDailyOptionUi extends StatefulWidget {
-  ElecDailyOptionUi({Key key}) : super(key: key);
+  ElecDailyOptionUi({Key? key}) : super(key: key);
 
   @override
   State<StatefulWidget> createState() => _EdoState();
@@ -28,7 +30,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
   static final NumberFormat _dollarPriceFmt =
       NumberFormat.simpleCurrency(decimalDigits: 0, name: '');
 
-  TextEditingController _commentsController;
+  late TextEditingController _commentsController;
 
   @override
   void initState() {
@@ -36,11 +38,13 @@ class _EdoState extends State<ElecDailyOptionUi> {
     final calculator = context.read<CalculatorModel>();
     final asOfDateModel = context.read<AsOfDateModel>();
     final termModel = context.read<TermModel>();
+    final buySellModel = context.read<BuySellModel>();
     asOfDateModel.init(calculator.asOfDate);
     termModel.init(calculator.term);
+    buySellModel.value = calculator.buySell;
 
     _commentsController = TextEditingController();
-    _commentsController.text = calculator.calculator.comments ?? '';
+    _commentsController.text = calculator.calculator.comments;
   }
 
   @override
@@ -48,6 +52,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
     final calculator = context.watch<CalculatorModel>();
     final asOfDateModel = context.watch<AsOfDateModel>();
     final termModel = context.watch<TermModel>();
+    final buySellModel = context.watch<BuySellModel>();
 
     return Form(
       key: _formKey,
@@ -63,19 +68,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
             SizedBox(width: 40),
             AsOfDateUi(),
             SizedBox(width: 40),
-            AdvancedSwitch(
-              activeChild: Text('Buy'),
-              inactiveChild: Text('Sell'),
-              activeColor: Colors.green,
-              inactiveColor: Colors.red,
-              borderRadius: BorderRadius.circular(20),
-              width: 100,
-              height: 30,
-              value: calculator.buySell == BuySell.buy ? true : false,
-              onChanged: (value) {
-                calculator.buySell = value ? BuySell.buy : BuySell.sell;
-              },
-            )
+            BuySellUi(),
           ],
         ),
 
@@ -106,7 +99,8 @@ class _EdoState extends State<ElecDailyOptionUi> {
                 decoration:
                     BoxDecoration(color: Theme.of(context).primaryColorLight),
                 child: FutureBuilder<String>(
-                    future: _dollarReprice(termModel, asOfDateModel),
+                    future:
+                        _dollarReprice(termModel, asOfDateModel, buySellModel),
                     builder: (context, snapshot) {
                       List<Widget> children;
                       if (snapshot.hasData) {
@@ -114,7 +108,7 @@ class _EdoState extends State<ElecDailyOptionUi> {
                           // Icon(Icons.done, color: Colors.green),
                           // SizedBox(width: 20),
                           Text(
-                            snapshot.data,
+                            snapshot.data!,
                             style: TextStyle(fontSize: 16),
                             key: Key('_edo_dollarPrice'),
                           )
@@ -172,23 +166,23 @@ class _EdoState extends State<ElecDailyOptionUi> {
           children: [
             const SizedBox(width: 20),
             ElevatedButton(
-              child: Text('Details', style: TextStyle(color: Colors.black)),
               onPressed: () => _showDetails(context, calculator),
+              child: Text('Details', style: TextStyle(color: Colors.black)),
             ),
             const SizedBox(width: 12),
             ElevatedButton(
-              child: Text('Reports', style: TextStyle(color: Colors.black)),
               onPressed: () => _showReports(context, calculator),
+              child: Text('Reports', style: TextStyle(color: Colors.black)),
             ),
             const SizedBox(width: 12),
             ElevatedButton(
-              child: Text('Save', style: TextStyle(color: Colors.black)),
               onPressed: () => _saveCalculator(context, calculator),
+              child: Text('Save', style: TextStyle(color: Colors.black)),
             ),
             const SizedBox(width: 12),
             ElevatedButton(
-              child: Text('Help', style: TextStyle(color: Colors.black)),
               onPressed: () {},
+              child: Text('Help', style: TextStyle(color: Colors.black)),
             ),
           ],
         )
@@ -196,19 +190,21 @@ class _EdoState extends State<ElecDailyOptionUi> {
     );
   }
 
-  Future<String> _dollarReprice(
-      TermModel termModel, AsOfDateModel asOfDateModel) async {
+  Future<String> _dollarReprice(TermModel termModel,
+      AsOfDateModel asOfDateModel, BuySellModel buySellModel) async {
     var calculator = context.read<CalculatorModel>();
     var value = '?';
     try {
       calculator.asOfDate = asOfDateModel.asOfDate;
       calculator.term = termModel.term;
+      calculator.buySell = buySellModel.buySell;
       await calculator.build();
       var aux = calculator.dollarPrice();
       value = _dollarPriceFmt.format(aux);
     } catch (e) {
       print(e);
     }
+    print(value);
     return value;
   }
 
@@ -272,8 +268,8 @@ class _EdoState extends State<ElecDailyOptionUi> {
 
   Future<void> _saveCalculator(
       BuildContext context, CalculatorModel calculator) async {
-    if (_formKey.currentState.validate()) {
-      _formKey.currentState.save();
+    if (_formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
       calculator.calculator.comments = _commentsController.text;
       var json = calculator.calculator.toJson();
       await showDialog<void>(
@@ -285,12 +281,13 @@ class _EdoState extends State<ElecDailyOptionUi> {
 
   final _outlineInputBorder = OutlineInputBorder(
     borderRadius: BorderRadius.all(Radius.zero),
-    borderSide: BorderSide(color: Colors.grey[300], width: 1),
+    borderSide: BorderSide(color: Colors.grey[300]!, width: 1),
   );
 }
 
 class _ReportItem extends StatelessWidget {
-  const _ReportItem({Key key, this.icon, this.color, this.text})
+  const _ReportItem(
+      {Key? key, required this.icon, required this.color, required this.text})
       : super(key: key);
 
   final IconData icon;

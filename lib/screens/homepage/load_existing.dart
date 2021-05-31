@@ -14,12 +14,12 @@ class LoadExistingForm extends StatefulWidget {
 
 class _LoadExistingFormState extends State<LoadExistingForm> {
   _LoadExistingFormState();
-  final LoadExisting model = LoadExisting(rootUrl: DotEnv().env['rootUrl2']);
+  final LoadExisting model = LoadExisting(rootUrl: dotenv.env['rootUrl']!);
   final _userIdController = TextEditingController();
   final _calculatorNameController = TextEditingController();
 
-  String userId;
-  String calculatorName;
+  late String userId;
+  late String calculatorName;
 
   @override
   Widget build(BuildContext context) {
@@ -37,7 +37,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
             Container(
               width: 200,
               child: TypeAheadFormField(
-                textFieldConfiguration: TextFieldConfiguration<String>(
+                textFieldConfiguration: TextFieldConfiguration(
                     controller: _userIdController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
@@ -73,7 +73,7 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
             Container(
               width: 400,
               child: TypeAheadFormField(
-                textFieldConfiguration: TextFieldConfiguration<String>(
+                textFieldConfiguration: TextFieldConfiguration(
                     controller: _calculatorNameController,
                     decoration: InputDecoration(
                         contentPadding: EdgeInsets.all(8),
@@ -105,11 +105,11 @@ class _LoadExistingFormState extends State<LoadExistingForm> {
 
             /// Load button
             ElevatedButton(
-              child: const Text('Load', style: TextStyle(color: Colors.black)),
               onPressed: () {
                 // need to navigator it ...
                 _loadCalculator();
               },
+              child: const Text('Load', style: TextStyle(color: Colors.black)),
             )
           ],
         ));

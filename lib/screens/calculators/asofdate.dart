@@ -17,13 +17,13 @@ class AsOfDateUi extends StatefulWidget {
 class _AsOfDateState extends State<AsOfDateUi> {
   _AsOfDateState();
 
-  String _error;
-  bool notToday;
+  String? _error;
+  late bool notToday;
 
   @override
   Widget build(BuildContext context) {
     final model = context.watch<AsOfDateModel>();
-    notToday = model.asOfDate != date.Date.today();
+    notToday = model.asOfDate != date.Date.today(location: UTC);
     return Container(
         width: 164.0,
         padding: EdgeInsets.all(12),
@@ -49,7 +49,7 @@ class _AsOfDateState extends State<AsOfDateUi> {
                 _error = 'Parsing error';
               } else {
                 model.asOfDate = aux;
-                if (model.asOfDate.isAfter(date.Date.today())) {
+                if (model.asOfDate.isAfter(date.Date.today(location: UTC))) {
                   _error = 'Date is from the future';
                 } else {
                   _error = null; // all good

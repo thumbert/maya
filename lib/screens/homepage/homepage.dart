@@ -7,7 +7,7 @@ import 'package:maya/screens/homepage/calculator_list.dart';
 import 'package:maya/screens/homepage/load_existing.dart';
 
 class HomePage extends StatefulWidget {
-  HomePage({Key key}) : super(key: key);
+  HomePage({Key? key}) : super(key: key);
 
   static const String route = '/';
 

@@ -12,18 +12,18 @@ import 'package:timeseries/timeseries.dart';
 class CalculatorModel extends ChangeNotifier {
   // CalculatorModel can't extend ElecDailyOption.  I've tried and it
   // didn't draw the widgets.  Got a Maximum call stack size exceeded.
-  ElecDailyOption _calculator;
+  late ElecDailyOption _calculator;
 
   /// From a mongo document.
   CalculatorModel.fromJson(Map<String, dynamic> x) {
-    x ??= initialValue;
+    if (x.isEmpty) x = initialValue;
     if (x['calculatorType'] == 'elec_daily_option') {
       _calculator = ElecDailyOption.fromJson(x);
     } else {
       throw ArgumentError('Not supported yet!');
     }
     _calculator.cacheProvider =
-        CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl']);
+        CacheProvider.test(client: Client(), rootUrl: dotenv.env['rootUrl']!);
   }
 
   set asOfDate(Date asOfDate) => _calculator.asOfDate = asOfDate;
@@ -34,7 +34,6 @@ class CalculatorModel extends ChangeNotifier {
 
   set buySell(BuySell buySell) {
     _calculator.buySell = buySell;
-    notifyListeners();
   }
 
   BuySell get buySell => _calculator.buySell;

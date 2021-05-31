@@ -63,13 +63,13 @@ class _EditQuantityState extends State<EditQuantity> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             ElevatedButton(
-                child:
-                    const Text('Save', style: TextStyle(color: Colors.black)),
                 onPressed: () async {
-                  var editedRows = _editableKey.currentState.editedRows;
+                  var editedRows = _editableKey.currentState!.editedRows;
                   await _updateQuantity(editedRows, ts);
                   Navigator.pop(context);
-                }),
+                },
+                child:
+                    const Text('Save', style: TextStyle(color: Colors.black))),
           ],
         ),
       ],

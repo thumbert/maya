@@ -12,18 +12,18 @@ import 'package:elec/src/risk_system/pricing/reports/report.dart';
 class CalculatorModel extends ChangeNotifier {
   // CalculatorModel can't extend ElecSwapCalculator.  I've tried and it
   // didn't draw the widgets.  Got a Maximum call stack size exceeded.
-  ElecSwapCalculator _calculator;
+  late ElecSwapCalculator _calculator;
 
   /// From a mongo document
   CalculatorModel.fromJson(Map<String, dynamic> x) {
-    x ??= initialValue;
+    if (x.isEmpty) x = initialValue;
     if (x['calculatorType'] == 'elec_swap') {
       _calculator = ElecSwapCalculator.fromJson(x);
     } else {
       throw ArgumentError('Not supported yet!');
     }
     _calculator.cacheProvider =
-        CacheProvider.test(client: Client(), rootUrl: DotEnv().env['rootUrl']);
+        CacheProvider.test(client: Client(), rootUrl: dotenv.env['rootUrl']!);
   }
 
   set asOfDate(Date asOfDate) {
@@ -40,7 +40,6 @@ class CalculatorModel extends ChangeNotifier {
 
   set buySell(BuySell buySell) {
     _calculator.buySell = buySell;
-    notifyListeners();
   }
 
   BuySell get buySell => _calculator.buySell;

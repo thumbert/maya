@@ -16,7 +16,7 @@ class TermUi extends StatefulWidget {
 class _TermUiState extends State<TermUi> {
   _TermUiState();
 
-  String _error;
+  String? _error;
 
   @override
   Widget build(BuildContext context) {
@@ -39,7 +39,7 @@ class _TermUiState extends State<TermUi> {
             setState(() {
               try {
                 model.term = date.Term.parse(text, UTC);
-                _error = null;
+                _error = null;  // all good
               } on ArgumentError catch (_) {
                 _error = 'Parsing error';
               } catch (e) {
